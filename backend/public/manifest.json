@@ -1,0 +1,22 @@
+{
+  "name": "Olahin - Kelola Kulkas Pintar & Cegah Limbah Pangan",
+  "short_name": "Olahin",
+  "description": "Kelola kulkas pintar Anda secara otomatis, deteksi bahan makanan dengan kamera, transkripsi suara, dan temukan resep lezat.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#10b981",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/images/logo-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/images/logo-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ]
+}
