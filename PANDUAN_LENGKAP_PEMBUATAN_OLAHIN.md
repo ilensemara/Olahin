@@ -1,866 +1,250 @@
-# RANGKUMAN LENGKAP: Cara Pembuatan Aplikasi Olahin dari Awal sampai Akhir
+# PANDUAN LENGKAP: Pembuatan & Arsitektur Aplikasi Olahin
+
+Dokumen ini berisi panduan teknis, spesifikasi arsitektur, dan instruksi lengkap pembuatan aplikasi **Olahin**—Manajemen Resep Pintar dan Pelacak Gizi berbasis kulkas pengguna yang dirancang dengan antarmuka responsif Mobile-First (mockup smartphone) bernuansa alam (Zaitun/Olive Green).
+
+---
 
 ## 📋 Daftar Isi
-1. [Gambaran Umum Proyek](#gambaran-umum-proyek)
-2. [Arsitektur Sistem](#arsitektur-sistem)
-3. [Tech Stack & Dependensi](#tech-stack--dependensi)
-4. [Struktur Folder Proyek](#struktur-folder-proyek)
-5. [Tahapan Pembuatan Lengkap](#tahapan-pembuatan-lengkap)
-6. [Setup & Instalasi](#setup--instalasi)
-7. [Fitur-Fitur Utama](#fitur-fitur-utama)
-8. [Alur Kerja Aplikasi](#alur-kerja-aplikasi)
+1. [Gambaran Umum Proyek](#1-gambaran-umum-proyek)
+2. [Arsitektur Sistem Baru](#2-arsitektur-sistem-baru)
+3. [Tech Stack & Dependensi](#3-tech-stack--dependensi)
+4. [Struktur Folder Proyek](#4-struktur-folder-proyek)
+5. [Skema Database & Relasi Model](#5-skema-database--relasi-model)
+6. [Implementasi Backend (Laravel REST API)](#6-implementasi-backend-laravel-rest-api)
+7. [Implementasi Frontend (Vue.js 3 SPA PWA)](#7-implementasi-frontend-vuejs-3-spa-pwa)
+8. [Panduan Menjalankan & Pengujian](#8-panduan-menjalankan--pengujian)
 
 ---
 
 ## 1. Gambaran Umum Proyek
 
-### 🎯 Tujuan Aplikasi
-**Olahin** adalah aplikasi mobile/web yang membantu pengguna mengurangi sampah makanan (food waste) dengan:
-- Mencatat stok kulkas secara digital
-- Memberikan rekomendasi resep berdasarkan bahan yang ada
-- Menampilkan dampak penghematan (biaya & sampah yang dicegah)
-- Memandu proses memasak secara interaktif
+**Olahin** adalah platform digital untuk mengurangi limbah makanan (*food waste*) di tingkat rumah tangga dengan membantu pengguna melacak ketersediaan bahan pangan di kulkas mereka dan mencocokkannya dengan resep yang optimal.
 
-### 📊 Masalah yang Diselesaikan
-- **Food Waste**: Banyak makanan terbuang karena terlupakan di kulkas
-- **Pemborosan Finansial**: Pengguna tidak tahu bahan apa yang dimiliki
-- **Dampak Lingkungan**: Sampah organik menghasilkan gas metana
+### 🎯 Fitur Unggulan
+- **Pencatat Bahan Kulkas:** CRUD bahan kulkas lengkap dengan pengelompokan kategori dan lencana kesegaran (indikator hari menuju kadaluarsa).
+- **Input Suara AI & Pindai Kamera:** Penambahan bahan makanan cerdas menggunakan mikrofon (Web Speech API) dan streaming kamera asli (WebRTC) dengan laser pemindai neon.
+- **Rekomendasi Resep Cerdas:** Algoritma pencocokan bahan kulkas (kesesuaian minimal 50%) diurutkan dari persentase kecocokan tertinggi.
+- **Wizard Memasak Interaktif:** Panduan memasak per langkah dalam panel hijau zaitun, countdown timer, dan modal video tutorial YouTube terintegrasi.
+- **Pelacak Kalori & Gizi Melingkar:** Visualisasi gauge lingkaran sisa kalori kulkas, diagram makronutrisi harian, dan grafik tren mingguan kalori (3 diagram batang bertumpuk per hari untuk Karbohidrat, Protein, dan Lemak).
 
 ---
 
-## 2. Arsitektur Sistem
+## 2. Arsitektur Sistem Baru
 
-### 🏗️ Diagram Arsitektur
+Aplikasi ini menggunakan model arsitektur **Client-Server terpisah (Decoupled SPA)** dengan fitur **Progressive Web App (PWA)** sehingga dapat diunduh langsung di Android/iOS dan berjalan secara mandiri:
+
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                    CLIENT LAYER (Frontend)                      │
-│  React Native (Expo) - Multi-platform (Android, iOS, Web)      │
-│  - Camera Scanner (Detect Ingredients)                         │
-│  - Voice Input (NLP Voice Recognition)                         │
-│  - Recipe Browser & Cooking Guide                             │
-│  - Analytics Dashboard                                         │
+│                    CLIENT LAYER (Frontend PWA)                  │
+│  Vue.js 3 + Vite + Tailwind CSS v4 + Pinia (Port: 5173)         │
+│  - WebRTC Camera Stream (Pindai Bahan real-time)                │
+│  - Web Speech API (Perekaman suara & pengenalan kata kunci AI)  │
+│  - Service Worker Caching (Workbox SW: Stale-While-Revalidate)  │
 └────────────────────────────┬────────────────────────────────────┘
-                             │ HTTP/REST API
+                             │
+                             │ HTTPS / JSON REST API
                              ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                   API LAYER (Backend)                           │
-│  Laravel PHP Framework (Port: 8000)                            │
-│  - User Authentication & Authorization (Laravel Sanctum)       │
-│  - Inventory Management CRUD                                   │
-│  - Recipe Matching Engine                                      │
-│  - Cooking Logs & Statistics                                   │
-│  - Fallback Handler (jika AI Engine offline)                   │
-└────────────────┬──────────────────────────┬─────────────────────┘
-                 │                          │
-                 ▼ (HTTP/REST)              │
-┌──────────────────────────────────────────┐ │
-│     AI ENGINE LAYER (Python)             │ │
-│  FastAPI + Uvicorn (Port: 8001)          │ │
-│  - Computer Vision (Image Detection)     │ │
-│  - NLP (Voice-to-Text)                   │ │
-│  - Recipe Matching Algorithm             │ │
-└──────────────────────────────────────────┘ │
-                                             ▼
+│                    API LAYER (Backend Server)                   │
+│  Laravel PHP Framework v10/v11 (Port: 8000)                     │
+│  - Restful endpoints (Autentikasi Sanctum, CRUD Bahan, Resep)   │
+│  - Algoritma Matching Resep & Pencatatan Kalori Harian          │
+└────────────────────────────┬────────────────────────────────────┘
+                             │
+                             ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                   DATABASE LAYER                                │
-│  MySQL/SQLite Database                                          │
-│  Tables: users, inventories, recipes, cooking_logs, etc.       │
+│                    DATABASE LAYER                               │
+│  SQLite Database                                                │
+│  Tabel: users, ingredients, recipes, recipe_steps, daily_logs   │
 └─────────────────────────────────────────────────────────────────┘
 ```
-
-### 🔄 Alur Data
-1. **Frontend** mengirim request ke **Backend API** (Laravel)
-2. **Backend** memproses logika bisnis dan validasi
-3. Jika diperlukan AI, **Backend** memanggil **AI Engine** (Python)
-4. **AI Engine** memproses CV/NLP dan return hasil
-5. **Backend** menyimpan data ke **Database** dan return ke **Frontend**
-6. **Frontend** menampilkan hasilnya kepada user
 
 ---
 
 ## 3. Tech Stack & Dependensi
 
-### 📱 Frontend (Expo React Native)
-```json
-{
-  "core": {
-    "expo": "~56.0.12",
-    "react": "19.2.3",
-    "react-native": "0.85.3",
-    "react-native-web": "^0.21.2"
-  },
-  "device_features": {
-    "expo-camera": "~56.0.8",           // Kamera untuk scanning
-    "expo-image-picker": "~56.0.20",    // Picker untuk upload foto
-    "expo-av": "^16.0.8",                // Audio/Video recording & playback
-    "expo-constants": "^57.0.3"          // Konstanta aplikasi
-  },
-  "runtime": {
-    "expo-status-bar": "~56.0.4",
-    "@expo/metro-runtime": "^56.0.15",
-    "@expo/ngrok": "^4.1.0"              // Tunneling untuk development
-  }
-}
-```
+### 🖥️ API Backend (Laravel PHP)
+- **Laravel Sanctum:** Autentikasi token untuk akses API aman.
+- **SQLite:** Sistem database relasional ringan yang terintegrasi secara lokal.
+- **Eloquent ORM:** Pemetaan database berorientasi objek yang efisien.
 
-### 🔧 Backend (Laravel PHP)
-```json
-{
-  "framework": "laravel/framework: ^9.0",
-  "authentication": "laravel/sanctum: ^2.14",
-  "http_client": "guzzlehttp/guzzle: ^7.2",
-  "cors": "fruitcake/laravel-cors: ^2.0.5",
-  "development": {
-    "testing": "phpunit/phpunit: ^9.5.10",
-    "faker": "fakerphp/faker: ^1.9.1"
-  }
-}
-```
-
-### 🤖 AI Engine (Python FastAPI)
-```
-fastapi>=0.100.0
-uvicorn>=0.22.0
-pydantic>=2.0
-python-multipart>=0.0.6
-```
+### 📱 Client Frontend (Vue.js 3 SPA PWA)
+- **Vite:** Server pengembangan dan bundling yang sangat cepat.
+- **Tailwind CSS v4:** Kerangka kerja CSS modern menggunakan konfigurasi `@theme` di dalam berkas CSS.
+- **Vue Router:** Router Single Page Application (SPA) dengan *private route guards*.
+- **Pinia:** Manajemen *state* terpusat dengan *offline fallback* lokal (menyimpan data ke `localStorage`).
+- **Axios:** Klien HTTP untuk berkomunikasi dengan API Laravel.
+- **vite-plugin-pwa:** Penyedia Service Worker otomatis untuk memfasilitasi performa offline.
 
 ---
 
 ## 4. Struktur Folder Proyek
 
 ```
-olahin/
-├── frontend/                    # React Native (Expo)
-│   ├── App.js
-│   ├── index.js
-│   ├── package.json
-│   ├── app.json
-│   ├── .expo/
-│   ├── assets/
-│   │   ├── logo/
-│   │   ├── images/
-│   │   └── fonts/
-│   ├── dist/                    # Build output
-│   └── node_modules/
-│
-├── backend/                     # Laravel PHP
+Olahin/
+├── backend/                  # Laravel REST API
 │   ├── app/
-│   │   ├── Http/
-│   │   │   └── Controllers/
-│   │   │       ├── AuthController.php
-│   │   │       ├── InventoryController.php
-│   │   │       ├── RecipeController.php
-│   │   │       └── CookingLogController.php
-│   │   ├── Models/
-│   │   │   ├── User.php
-│   │   │   ├── Inventory.php
-│   │   │   ├── Recipe.php
-│   │   │   └── CookingLog.php
-│   │   └── Services/
-│   │       ├── AIService.php        # Integrasi dengan AI Engine
-│   │       └── RecipeMatchService.php
+│   │   ├── Models/           # User, Ingredient, Recipe, RecipeStep, DailyLog
+│   │   └── Http/Controllers/ # AuthController, InventoryController, RecipeController, InsightController
 │   ├── database/
-│   │   ├── migrations/
-│   │   │   ├── create_users_table.php
-│   │   │   ├── create_inventories_table.php
-│   │   │   ├── create_recipes_table.php
-│   │   │   └── create_cooking_logs_table.php
-│   │   └── seeders/
-│   │       └── RecipeSeeder.php
-│   ├── routes/
-│   │   └── api.php
-│   ├── config/
-│   ├── .env & .env.example
-│   ├── composer.json
-│   └── artisan
+│   │   ├── migrations/       # Skema tabel database
+│   │   └── seeders/          # DatabaseSeeder (Budi Santoso & data contoh)
+│   └── .env                  # Konfigurasi database & app backend
 │
-├── ai-engine/                   # FastAPI Python
-│   ├── main.py                  # Endpoint FastAPI
-│   ├── requirements.txt
-│   ├── models/
-│   │   ├── ingredient_detector.py
-│   │   └── voice_processor.py
-│   └── utils/
-│       └── helpers.py
+├── frontend/                 # Vue.js 3 Client (PWA)
+│   ├── public/               # manifest.webmanifest & favicon.svg
+│   ├── src/
+│   │   ├── assets/           # Ikon & logo statis
+│   │   ├── components/       # Komponen global reusable
+│   │   ├── router/           # Routing halaman SPA (index.js)
+│   │   ├── store/            # State Management Pinia & Axios (index.js)
+│   │   ├── views/            # 12 Halaman Tampilan Utama (Splash, Fridge, Insights, dll.)
+│   │   ├── App.vue           # Frame telepon mobile & bottom navigation bar
+│   │   ├── main.js           # Entrypoint inisialisasi Vue & Pinia
+│   │   └── style.css         # Impor Tailwind v4 & Variabel Warna Kustom
+│   ├── vite.config.js        # Konfigurasi Vite & Workbox Service Worker Caching
+│   ├── postcss.config.cjs    # Konfigurasi plugin CSS autoprefixer & Tailwind
+│   └── tailwind.config.cjs   # Catatan referensi layout Tailwind
 │
-├── run_servers.bat              # Script untuk menjalankan semua server
-└── rangkuman_presentasi_olahin.md
+└── run_servers.bat           # File skrip runner server backend & frontend sekaligus
 ```
 
 ---
 
-## 5. Tahapan Pembuatan Lengkap
+## 5. Skema Database & Relasi Model
 
-### Phase 1️⃣: Persiapan & Perencanaan (Minggu 1)
+Aplikasi ini menggunakan database relasional SQLite yang memisahkan instruksi memasak dan log konsumsi kalori secara terstruktur:
 
-#### 1.1 Setup Folder & Version Control
-```bash
-# Buat folder utama
-mkdir olahin
-cd olahin
+### 1. Model `User` (Tabel `users`)
+Menampung kredensial login serta metrik fisik untuk perhitungan gizi:
+- `id` (Primary Key)
+- `name` (string)
+- `email` (string, unique)
+- `password` (string)
+- `weight` (integer) - Berat badan (kg)
+- `height` (integer) - Tinggi badan (cm)
+- `age` (integer) - Usia (tahun)
+- `target_calories` (integer, default: 2000)
 
-# Inisialisasi Git
-git init
-```
+### 2. Model `Ingredient` (Tabel `ingredients`)
+Menyimpan persediaan bahan di kulkas pengguna:
+- `id` (Primary Key)
+- `user_id` (Foreign Key -> `users`)
+- `name` (string)
+- `quantity` (float)
+- `unit` (string: pcs, gr, ml, siung)
+- `category` (string: Protein, Sayuran, Bumbu, Lainnya)
+- `expiry_date` (date)
 
-#### 1.2 Buat Sub-folder Proyek
-```bash
-mkdir frontend backend ai-engine
-```
+### 3. Model `Recipe` (Tabel `recipes`)
+Menampung data resep kuliner:
+- `id` (Primary Key)
+- `title` (string)
+- `description` (text)
+- `prep_time` (integer) - Waktu persiapan (menit)
+- `calories` (integer) - Kandungan kalori (kkal)
+- `youtube_video_url` (string, optional)
+- `youtube_id` (string, optional)
+*   **Relasi:** `hasMany` ke `RecipeStep`.
 
-#### 1.3 Dokumentasi & Roadmap
-- Buat `README.md` dengan deskripsi proyek
-- Buat `ARCHITECTURE.md` untuk penjelasan sistem
-- Buat issue tracker / kanban board
+### 5. Model `RecipeStep` (Tabel `recipe_steps`)
+Menyimpan instruksi langkah-demi-langkah resep secara terpisah:
+- `id` (Primary Key)
+- `recipe_id` (Foreign Key -> `recipes`)
+- `step_number` (integer)
+- `instruction` (text)
+
+### 6. Model `DailyLog` (Tabel `daily_logs`)
+Mencatat riwayat asupan kalori & gizi harian yang dikonsumsi pengguna:
+- `id` (Primary Key)
+- `user_id` (Foreign Key -> `users`)
+- `date` (date)
+- `calories` (integer)
+- `carbs` (integer)
+- `protein` (integer)
+- `fat` (integer)
 
 ---
 
-### Phase 2️⃣: Setup Backend (Laravel) - Minggu 2
+## 6. Implementasi Backend (Laravel REST API)
 
-#### 2.1 Inisialisasi Laravel
-```bash
-cd backend
-composer create-project laravel/laravel . "^9.0"
-```
+API Backend menangani autentikasi, penyediaan data gizi, pencocokan resep, dan manipulasi inventori kulkas.
 
-#### 2.2 Setup Database
-```bash
-# Copy .env.example ke .env
-cp .env.example .env
+### Endpoint API Utama:
+1. **Autentikasi:**
+   - `POST /api/register`: Menerima nama, email, sandi, serta menyimpan profil fisik standar.
+   - `POST /api/login`: Memverifikasi kredensial dan menerbitkan token Sanctum.
+   - `POST /api/user/update`: Memperbarui berat badan, tinggi badan, usia, dan target kalori pengguna.
+2. **Kulkas (CRUD):**
+   - `GET /api/inventory`: Mengambil daftar bahan kulkas pengguna.
+   - `POST /api/inventory`: Menambahkan bahan kulkas baru.
+   - `DELETE /api/inventory/{id}`: Menghapus bahan kulkas.
+3. **Resep & Cooking:**
+   - `GET /api/recipes/matched`: Menghitung persentase kesesuaian resep berdasarkan stok kulkas yang dimiliki pengguna saat ini. Resep dengan kecocokan $\ge 50\%$ akan dikembalikan.
+   - `POST /api/recipes/{id}/cook`: Mencatat masakan selesai, memotong stok bahan makanan secara otomatis di database, dan mencatat perolehan gizi ke `daily_logs`.
+4. **Insights:**
+   - `GET /api/insights`: Mengambil data asupan hari ini, ringkasan fisik, serta data riwayat kalori 7 hari terakhir untuk grafik mingguan.
 
-# Generate app key
-php artisan key:generate
+---
 
-# Konfigurasi database di .env
-DB_CONNECTION=sqlite
-DB_DATABASE=database/database.sqlite
-```
+## 7. Implementasi Frontend (Vue.js 3 SPA PWA)
 
-#### 2.3 Buat Model & Migration
-```bash
-# User Model (sudah ada default)
-php artisan make:migration create_users_table
+Klien Frontend dirancang agar terlihat seperti aplikasi iOS/Android asli menggunakan viewport telepon melengkung.
 
-# Inventory Model
-php artisan make:model Inventory -m
+### 🎨 Desain Sistem & Gaya (style.css)
+Menggunakan **Tailwind CSS v4** dengan variabel warna kustom:
+```css
+@import "tailwindcss";
 
-# Recipe Model
-php artisan make:model Recipe -m
-
-# RecipeIngredient Model
-php artisan make:model RecipeIngredient -m
-
-# CookingLog Model
-php artisan make:model CookingLog -m
-```
-
-#### 2.4 Definisikan Database Schema (Migration Files)
-```php
-// database/migrations/XXXX_create_inventories_table.php
-Schema::create('inventories', function (Blueprint $table) {
-    $table->id();
-    $table->foreignId('user_id')->constrained();
-    $table->string('name');
-    $table->decimal('quantity', 10, 2);
-    $table->string('unit'); // gram, ml, pcs
-    $table->date('expiry_date');
-    $table->string('category'); // vegetable, meat, spice
-    $table->timestamps();
-});
-
-// database/migrations/XXXX_create_recipes_table.php
-Schema::create('recipes', function (Blueprint $table) {
-    $table->id();
-    $table->string('title');
-    $table->text('description');
-    $table->integer('prep_time'); // menit
-    $table->integer('cook_time');
-    $table->json('nutrition'); // kalori, protein, dll
-    $table->string('video_url')->nullable();
-    $table->json('instructions'); // langkah-langkah
-    $table->timestamps();
-});
-
-// database/migrations/XXXX_create_cooking_logs_table.php
-Schema::create('cooking_logs', function (Blueprint $table) {
-    $table->id();
-    $table->foreignId('user_id')->constrained();
-    $table->foreignId('recipe_id')->constrained();
-    $table->decimal('waste_prevented', 5, 2); // kg
-    $table->decimal('money_saved', 10, 2); // Rp
-    $table->timestamp('cooked_at');
-    $table->timestamps();
-});
-```
-
-#### 2.5 Jalankan Migration
-```bash
-php artisan migrate
-php artisan seed:run
-```
-
-#### 2.6 Buat Controller & API Routes
-```bash
-php artisan make:controller AuthController
-php artisan make:controller InventoryController
-php artisan make:controller RecipeController
-php artisan make:controller CookingLogController
-```
-
-#### 2.7 Setup API Routes
-```php
-// routes/api.php
-Route::post('/auth/register', [AuthController::class, 'register']);
-Route::post('/auth/login', [AuthController::class, 'login']);
-
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/inventory', [InventoryController::class, 'index']);
-    Route::post('/inventory', [InventoryController::class, 'store']);
-    Route::put('/inventory/{id}', [InventoryController::class, 'update']);
-    Route::delete('/inventory/{id}', [InventoryController::class, 'destroy']);
-    
-    Route::get('/recipes/recommended', [RecipeController::class, 'getRecommended']);
-    Route::get('/recipes/{id}', [RecipeController::class, 'show']);
-    
-    Route::post('/cooking-log', [CookingLogController::class, 'store']);
-    Route::get('/cooking-log', [CookingLogController::class, 'index']);
-});
-```
-
-#### 2.8 Implementasi AI Integration Service
-```php
-// app/Services/AIService.php
-class AIService {
-    protected $client;
-    
-    public function __construct() {
-        $this->client = new \GuzzleHttp\Client([
-            'base_uri' => env('AI_ENGINE_URL', 'http://localhost:8001')
-        ]);
-    }
-    
-    public function detectIngredients($imagePath) {
-        try {
-            $response = $this->client->post('/detect-ingredients', [
-                'multipart' => [
-                    ['name' => 'file', 'contents' => fopen($imagePath, 'r')]
-                ]
-            ]);
-            return json_decode($response->getBody());
-        } catch (\Exception $e) {
-            // Fallback: return simulated data
-            return $this->getFallbackDetection();
-        }
-    }
-    
-    private function getFallbackDetection() {
-        return [
-            'ingredients' => [
-                ['name' => 'Tomat', 'quantity' => 2, 'unit' => 'pcs'],
-                ['name' => 'Bawang Merah', 'quantity' => 3, 'unit' => 'pcs']
-            ]
-        ];
-    }
+@theme {
+  --color-nature-cream: #F4F3EA;   /* Background aplikasi */
+  --color-nature-card: #FFFFFF;    /* Background kartu */
+  --color-nature-input: #EAE8DC;   /* Background form input */
+  --color-nature-forest: #2C3529;  /* Teks utama */
+  --color-nature-zaitun: #4D5C48;  /* Warna utama (Olive/Zaitun) */
+  --color-nature-olive: #6E8067;   /* Warna zaitun sedang */
+  --color-nature-sage: #D1D8CD;    /* Border & badge */
+  --color-nature-mint: #EBF0E9;    /* Latar belakang badge */
+  --color-nature-red: #C85C5C;     /* Peringatan kadaluarsa */
+  --color-nature-yellow: #DF9D4F;  /* Warna gizi makro */
 }
 ```
 
----
-
-### Phase 3️⃣: Setup AI Engine (Python FastAPI) - Minggu 2
-
-#### 3.1 Setup Environment
-```bash
-cd ai-engine
-python -m venv venv
-
-# Windows
-venv\Scripts\activate
-# Linux/Mac
-source venv/bin/activate
-
-pip install -r requirements.txt
-```
-
-#### 3.2 Buat FastAPI Main Server
-```python
-# main.py
-from fastapi import FastAPI, File, UploadFile
-from fastapi.responses import JSONResponse
-from pydantic import BaseModel
-import uvicorn
-
-app = FastAPI(title="Olahin AI Engine")
-
-class VoiceInput(BaseModel):
-    audio_text: str
-
-@app.get("/health")
-async def health_check():
-    return {"status": "ok", "service": "Olahin AI Engine"}
-
-@app.post("/detect-ingredients")
-async def detect_ingredients(file: UploadFile = File(...)):
-    """
-    Mendeteksi bahan makanan dari foto
-    Return: list of ingredients dengan quantity & unit
-    """
-    # Simulasi deteksi (implementasi nyata butuh model CV)
-    return {
-        "ingredients": [
-            {"name": "Ayam", "quantity": 500, "unit": "gram"},
-            {"name": "Bawang Putih", "quantity": 3, "unit": "siung"},
-            {"name": "Cabai Merah", "quantity": 2, "unit": "buah"}
-        ]
-    }
-
-@app.post("/voice-to-text")
-async def voice_to_text(input: VoiceInput):
-    """
-    Konversi voice input menjadi text dan extract ingredients
-    """
-    # Simulasi NLP (implementasi nyata butuh model NLP)
-    text = input.audio_text
-    return {
-        "text": text,
-        "ingredients": [
-            {"name": "Daging Ayam", "quantity": 500, "unit": "gram"}
-        ]
-    }
-
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8001)
-```
-
-#### 3.3 Setup Uvicorn Server
-```bash
-uvicorn main:app --reload --host 0.0.0.0 --port 8001
-```
+### 📱 Alur Layar Aplikasi (12 Views)
+1. **Splash.vue:** Tampilan pembuka animasi bounce logo yang berdurasi 2,5 detik kemudian berpindah otomatis ke Welcome.
+2. **Welcome.vue:** Menyediakan tombol masuk bernuansa zaitun, pendaftaran outline, serta tautan **"Lewati..."** untuk memintas autentikasi dan langsung masuk ke mode offline.
+3. **Login.vue & Register.vue:** Kartu login glassmorphic minimalis di atas latar belakang makanan yang blur, lengkap dengan kolom garis bawah tipis dan integrasi tombol masuk media sosial Apple & Google.
+4. **Home.vue:** Dashboard utama yang menyapa pengguna (misal: "Halo, Budi Santoso!"), kotak pencarian *"What do you cook today?"*, banner peringatan kadaluarsa, tombol pintas melingkar, dan grid resep 2 kolom. Dilengkapi lonceng notifikasi `🔔` yang menampilkan modal peringatan kadaluarsa serta penghematan limbah makanan saat diklik.
+5. **Fridge.vue:** Mengintegrasikan dua tab fungsional:
+   - **Tab Bahan Makanan:** Daftar stok kulkas per kategori dengan tag status kadaluwarsa warna teratur (hijau/kuning/merah) dan tombol plus melayang (`+`) untuk menambah bahan.
+   - **Tab Analisis Gizi:** Gauge lingkaran persentase kalori kulkas, perolehan gizi makronutrisi per bahan dengan horizontal progress bar berwarna-warni, serta tombol menuju halaman resep cocok.
+6. **AddIngredient.vue:** Antarmuka penambahan bahan yang dilengkapi grid prasetel bahan makanan cepat pakai emoji, penyesuai jumlah counter `+/-`, daftar draf peninjau bahan sebelum disimpan, perekam suara (Web Speech API) untuk pengenalan kata kunci, dan streaming kamera asli (WebRTC) dengan laser neon pemindai.
+7. **RecipeRecommendations.vue:** Daftar resep diurutkan berdasarkan tingkat kecocokan kulkas, lengkap dengan peringatan merah jika resep tersebut memanfaatkan bahan yang hampir kadaluarsa.
+8. **CookingGuide.vue:** Panduan memasak per langkah dalam kartu hijau zaitun besar, timer countdown font ekstra besar yang bisa diputar/dijeda, tombol video popup YouTube, dan tombol navigasi bawah kapsul.
+9. **CookingSuccess.vue:** Selamat atas keberhasilan memasak, checklist bahan terpakai, tombol aksi merah **"Hapus Bahan"** untuk pemotongan stok database real-time, serta grafik laporan dampak pencegahan limbah pangan dan emisi CO2.
+10. **Insights.vue:** Menampilkan profil yang terbagi dalam tiga tab:
+    - **Tab Status Harian:** Kartu asupan kalori hari ini (misal: 1240 / 1800 kcal) dengan progress bar gizi makro, dan log makanan pagi/siang/malam.
+    - **Tab Data Tubuh:** Form interaktif pembaruan berat badan, tinggi badan, usia, dan target kalori harian.
+    - **Tab Riwayat 7 Hari:** Grafik tren 7 hari berupa kelompok 3 batang vertikal per hari (Karbohidrat, Protein, Lemak) yang dirancang menggunakan elemen flexbox CSS murni.
 
 ---
 
-### Phase 4️⃣: Setup Frontend (React Native Expo) - Minggu 3-4
-
-#### 4.1 Inisialisasi Expo Project
-```bash
-cd frontend
-npx create-expo-app . --template
-# atau
-expo init . --template
-```
-
-#### 4.2 Install Dependensi
-```bash
-npm install expo-camera expo-image-picker expo-av expo-constants
-npm install @react-navigation/native @react-navigation/bottom-tabs
-npm install axios react-native-dotenv
-```
-
-#### 4.3 Setup Struktur Folder
-```
-frontend/
-├── screens/
-│   ├── SplashScreen.js
-│   ├── WelcomeScreen.js
-│   ├── AuthScreen.js
-│   ├── DashboardScreen.js
-│   ├── InventoryScreen.js
-│   ├── CameraScreen.js
-│   ├── VoiceInputScreen.js
-│   ├── RecipeScreen.js
-│   ├── CookingGuideScreen.js
-│   └── AnalyticsScreen.js
-├── components/
-│   ├── IngredientCard.js
-│   ├── RecipeCard.js
-│   ├── Timer.js
-│   └── StatsChart.js
-├── services/
-│   ├── api.js              // Axios client
-│   └── storage.js          // AsyncStorage
-├── utils/
-│   ├── colors.js
-│   ├── constants.js
-│   └── helpers.js
-├── navigation/
-│   └── RootNavigator.js
-├── App.js
-├── app.json
-└── package.json
-```
-
-#### 4.4 Buat API Service (Axios Client)
-```javascript
-// services/api.js
-import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8000/api';
-
-const api = axios.create({
-    baseURL: API_BASE_URL,
-    timeout: 10000,
-});
-
-// Add auth token interceptor
-api.interceptors.request.use(async (config) => {
-    const token = await AsyncStorage.getItem('auth_token');
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-});
-
-export default api;
-```
-
-#### 4.5 Buat Main App Component
-```javascript
-// App.js
-import React, { useEffect, useState } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-import SplashScreen from './screens/SplashScreen';
-import DashboardScreen from './screens/DashboardScreen';
-import InventoryScreen from './screens/InventoryScreen';
-import RecipeScreen from './screens/RecipeScreen';
-import AnalyticsScreen from './screens/AnalyticsScreen';
-
-const Tab = createBottomTabNavigator();
-
-export default function App() {
-    const [isSplashVisible, setIsSplashVisible] = useState(true);
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-    useEffect(() => {
-        // Check if user logged in
-        checkAuthStatus();
-    }, []);
-
-    const checkAuthStatus = async () => {
-        const token = await AsyncStorage.getItem('auth_token');
-        setIsLoggedIn(!!token);
-        setTimeout(() => setIsSplashVisible(false), 2000);
-    };
-
-    if (isSplashVisible) {
-        return <SplashScreen />;
-    }
-
-    if (!isLoggedIn) {
-        return <AuthScreen onLoginSuccess={() => setIsLoggedIn(true)} />;
-    }
-
-    return (
-        <NavigationContainer>
-            <Tab.Navigator
-                screenOptions={{
-                    tabBarActiveTintColor: '#10b981',
-                    tabBarInactiveTintColor: '#ccc',
-                }}
-            >
-                <Tab.Screen 
-                    name="Dashboard" 
-                    component={DashboardScreen}
-                    options={{ tabBarLabel: 'Beranda' }}
-                />
-                <Tab.Screen 
-                    name="Inventory" 
-                    component={InventoryScreen}
-                    options={{ tabBarLabel: 'Kulkas' }}
-                />
-                <Tab.Screen 
-                    name="Recipes" 
-                    component={RecipeScreen}
-                    options={{ tabBarLabel: 'Resep' }}
-                />
-                <Tab.Screen 
-                    name="Analytics" 
-                    component={AnalyticsScreen}
-                    options={{ tabBarLabel: 'Statistik' }}
-                />
-            </Tab.Navigator>
-        </NavigationContainer>
-    );
-}
-```
-
-#### 4.6 Buat Camera Screen untuk Deteksi Bahan
-```javascript
-// screens/CameraScreen.js
-import React, { useState, useRef } from 'react';
-import { View, Button, ActivityIndicator } from 'react-native';
-import { CameraView } from 'expo-camera';
-import api from '../services/api';
-
-export default function CameraScreen({ onIngredientDetected }) {
-    const [loading, setLoading] = useState(false);
-    const cameraRef = useRef(null);
-
-    const handleTakePhoto = async () => {
-        if (cameraRef.current) {
-            setLoading(true);
-            try {
-                const photo = await cameraRef.current.takePictureAsync();
-                
-                // Kirim foto ke backend untuk deteksi
-                const formData = new FormData();
-                formData.append('file', {
-                    uri: photo.uri,
-                    type: 'image/jpeg',
-                    name: 'ingredient.jpg',
-                });
-
-                const response = await api.post('/inventory/detect-ingredients', formData, {
-                    headers: { 'Content-Type': 'multipart/form-data' },
-                });
-
-                onIngredientDetected(response.data.ingredients);
-            } catch (error) {
-                console.error('Detection error:', error);
-            } finally {
-                setLoading(false);
-            }
-        }
-    };
-
-    return (
-        <View style={{ flex: 1 }}>
-            <CameraView ref={cameraRef} style={{ flex: 1 }} />
-            {loading && <ActivityIndicator size="large" />}
-            <Button title="Foto" onPress={handleTakePhoto} disabled={loading} />
-        </View>
-    );
-}
-```
-
----
-
-### Phase 5️⃣: Testing & Integration - Minggu 4
-
-#### 5.1 Test Backend API
-```bash
-cd backend
-php artisan serve --port=8000
-```
-
-#### 5.2 Test AI Engine
-```bash
-cd ai-engine
-source venv/bin/activate
-uvicorn main:app --reload --port 8001
-```
-
-#### 5.3 Test Frontend
-```bash
-cd frontend
-npm start
-# Pilih: android, ios, atau web
-```
-
-#### 5.4 Buat Script Untuk Menjalankan Semua Server
-```batch
-REM run_servers.bat (Windows)
-@echo off
-start "Laravel Backend" cmd /k "cd backend && php artisan serve --port=8000"
-start "AI Engine" cmd /k "cd ai-engine && venv\Scripts\activate && uvicorn main:app --reload --port 8001"
-start "Expo Frontend" cmd /k "cd frontend && npm start"
-```
-
----
-
-## 6. Setup & Instalasi
-
-### Instalasi Cepat (Quick Start)
-
-#### Persiapan
-```bash
-# Clone atau extract folder olahin
-cd olahin
-
-# Pastikan installed:
-# - Node.js & npm
-# - PHP 8.0+
-# - Python 3.8+
-# - Composer
-```
-
-#### Step 1: Backend Setup
-```bash
-cd backend
-
-# Install dependencies
-composer install
-
-# Copy environment
-cp .env.example .env
-
-# Generate key
-php artisan key:generate
-
-# Setup database
-php artisan migrate
-php artisan db:seed
-
-# Run server
-php artisan serve --port=8000
-```
-
-#### Step 2: AI Engine Setup
-```bash
-cd ../ai-engine
-
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate  # atau venv\Scripts\activate (Windows)
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Run server
-uvicorn main:app --reload --port 8001
-```
-
-#### Step 3: Frontend Setup
-```bash
-cd ../frontend
-
-# Install dependencies
-npm install
-
-# Run development server
-npm start
-
-# Choose: android, ios, atau web
-```
-
-### One-Command Setup (Windows)
-```batch
-run_servers.bat
-```
-
----
-
-## 7. Fitur-Fitur Utama
-
-### 1. 👤 User Authentication
-- **Register**: Pengguna membuat akun dengan email & password
-- **Login**: Autentikasi berbasis token (JWT via Laravel Sanctum)
-- **Profile**: Set nutrisi target harian (kalori, protein, dll)
-
-### 2. 🥕 Smart Inventory Management
-- **Add Item Manually**: Input bahan dengan nama, qty, tanggal expired
-- **Add via Photo**: Ambil foto bahan → AI detect → Auto-add
-- **Add via Voice**: Ucapkan "Tomat 500 gram" → NLP process → Auto-add
-- **Visual Indicators**: 
-  - Hijau: Bahan masih segar (>7 hari)
-  - Kuning: Segera habiskan (1-7 hari)
-  - Merah: Segera kadaluarsa (<1 hari)
-
-### 3. 🍳 Recipe Recommendation
-- **Matching Algorithm**: Cari resep yang match dengan bahan yg ada
-- **Priority Logic**: 
-  - Prioritas bahan dengan expired date terdekat
-  - Filter berdasarkan nutrisi user
-- **Display**: Persentase kecocokan, waktu memasak, kalori per porsi
-
-### 4. 🎯 Cooking Guide
-- **Step-by-step Instructions**: Petunjuk detail setiap langkah
-- **Built-in Timer**: Timer otomatis untuk setiap tahap memasak
-- **Video Link**: Link tutorial video dari YouTube
-- **Auto Stock Reduction**: Setelah selesai, stok bahan otomatis berkurang
-
-### 5. 📊 Analytics Dashboard
-- **Weekly Waste Prevented**: Grafik jumlah sampah yang dicegah (kg)
-- **Money Saved**: Grafik uang yang dihemat dari tidak membuang makanan
-- **Cooking Count**: Total resep yang sudah dimasak
-- **Impact Badge**: Gamifikasi (Bronze/Silver/Gold) berdasarkan kontribusi
-
-### 6. 🌐 Offline Mode
-- **Local Storage**: Data disimpan di device jika offline
-- **Sync**: Otomatis sync saat kembali online
-- **Fallback**: AI Engine offline → Gunakan simulasi data
-
----
-
-## 8. Alur Kerja Aplikasi (Typical User Journey)
-
-### Skenario 1: User Membeli Bahan Baru
-```
-1. User di Pasar → Beli Tomat, Bawang, Telur
-2. Buka Olahin → Tab Kulkas
-3. Klik "+" → Pilih "Scan Foto"
-4. Ambil foto bahan → App mendeteksi
-5. Verifikasi & set expiry date
-6. Bahan tersimpan di digital inventory
-7. Home screen show: "Anda punya 15 item ready untuk dimasak"
-```
-
-### Skenario 2: Mencari Resep Makan Siang
-```
-1. User buka Olahin → Tab Resep
-2. Klik "Rekomendasi untuk Saya"
-3. Sistem analisis stok kulkas
-4. Tampilkan Top 5 Resep sesuai bahan
-5. User lihat "Nasi Goreng Telur (95% match)"
-6. Klik resep → Lihat ingredients needed
-7. Klik "Masak Sekarang" → Mulai cooking guide
-```
-
-### Skenario 3: Proses Memasak
-```
-1. User di tab Cooking Guide
-2. Step 1: "Panaskan minyak 2 menit" → Timer aktif
-3. User klik "Selesai" atau tunggu timer habis
-4. Step 2: "Masukkan bawang & cabai" → Auto show
-5. ... (sampai step terakhir)
-6. Klik "Selesai Memasak"
-7. Sistem: Kurangi stok bahan, save ke cooking_logs
-8. Tampilkan: "Hemat Rp 5.000 + 150g sampah dicegah!"
-```
-
----
-
-## 📌 Key Takeaways
-
-✅ **Olahin adalah Full-Stack Application dengan:**
-- Frontend: React Native (cross-platform)
-- Backend: Laravel (robust API)
-- AI: Python FastAPI (CV & NLP)
-- Database: MySQL/SQLite (structured data)
-
-✅ **Tech Stack Modern:**
-- Expo untuk mobile development yang cepat
-- Laravel Sanctum untuk authentication
-- Guzzle untuk HTTP client
-- FastAPI untuk lightweight AI service
-
-✅ **Fitur Inovatif:**
-- AI-powered ingredient detection (camera)
-- Voice input untuk hands-free operation
-- Gamification dengan analytics dashboard
-- Offline-first architecture dengan sync
-
-✅ **Value Proposition:**
-- Reduce food waste di rumah
-- Save uang dengan memanfaatkan bahan yg ada
-- Kontribusi environmental sustainability
-- Positive psychology dari impact metrics
-
----
-
-## 🚀 Next Steps
-
-1. **Development**: Selesaikan Phase 1-5 sesuai timeline
-2. **Testing**: Unit test, integration test, user acceptance test
-3. **Deployment**: 
-   - Frontend: Deploy ke App Store, Play Store, atau web hosting
-   - Backend: Deploy ke cloud (heroku, railway, etc)
-   - AI Engine: Deploy ke ML server (AWS SageMaker, Azure ML, etc)
-4. **Maintenance**: Bug fix, feature updates, user support
-
----
-
-*Dokumentasi ini dibuat untuk memberikan gambaran lengkap proses pembuatan Olahin dari A-Z.*
+## 8. Panduan Menjalankan & Pengujian
+
+### 1. Menjalankan Server Otomatis
+Anda tidak perlu menyalakan backend dan frontend secara terpisah. Cukup jalankan berkas batch skrip runner di folder root:
+- Klik ganda berkas **`run_servers.bat`** pada Windows Explorer.
+- Skrip ini akan secara otomatis:
+  1. Menjalankan server database & Laravel API Backend (`php artisan serve`) di port `8000`.
+  2. Menjalankan server pengembangan Vite Frontend (`npm run dev`) di port `5173`.
+  3. Membuka browser Anda secara otomatis ke halaman aplikasi.
+
+### 2. Mengakses Aplikasi
+Buka browser favorit Anda dan arahkan ke alamat berikut:
+👉 **[http://localhost:5173](http://localhost:5173)**
+
+### 3. Skenario Pengujian Alur Utama
+1. **Autentikasi:** Masuk menggunakan email bawaan: `user@olahin.com` dan kata sandi: `password`. Untuk keluar, buka tab Profil -> klik tombol **Keluar 🚪** merah di kanan atas.
+2. **Tambah Bahan Kulkas:** Buka halaman Kulkas -> klik tombol tambah `+`. Coba klik **Kamera `📷`** untuk streaming kamera video Anda atau klik **Mikrofon `🎤`** dan ucapkan kata *"wortel"* untuk mengisi formulir input. Tambahkan ke daftar dan klik "Simpan Bahan".
+3. **Memasak & Pemotongan Stok:** Buka tab Resep, pilih resep dengan kecocokan tinggi (misal: *Nasi Goreng Telur*). Ikuti petunjuknya di panduan memasak, buka modal video YouTube, selesaikan langkah, lalu klik tombol **"Hapus Bahan"** di halaman sukses. Periksa kembali tab Kulkas Anda, stok bahan yang digunakan otomatis terpotong secara real-time dari database.
+4. **Analisis Gizi:** Buka tab **Profil** -> **Riwayat 7 Hari** untuk melihat asupan kalori yang tercatat dari resep yang baru saja Anda masak.
