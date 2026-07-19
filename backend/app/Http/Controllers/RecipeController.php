@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Recipe;
-use App\Models\Inventory;
+use App\Models\Ingredient;
 use App\Models\CookingLog;
+use App\Models\DailyLog;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -13,12 +15,12 @@ class RecipeController extends Controller
     public function matchRecipes()
     {
         // 1. Get current stock in fridge
-        $stock = Inventory::all()->mapWithKeys(function ($item) {
+        $stock = Ingredient::all()->mapWithKeys(function ($item) {
             return [strtolower(trim($item->name)) => $item];
         })->all();
 
-        // 2. Get all recipes with ingredients
-        $recipes = Recipe::with('ingredients')->get();
+        // 2. Get all recipes with ingredients and steps
+        $recipes = Recipe::with(['ingredients', 'steps'])->get();
         $matchedRecipes = [];
 
         foreach ($recipes as $recipe) {
@@ -37,7 +39,6 @@ class RecipeController extends Controller
                     $stockItem = $stock[$ingNameLower];
                     
                     // We count as a match if the ingredient exists in stock
-                    // Optional check: whether quantity in stock is sufficient
                     $matchCount++;
                     $matchedList[] = [
                         'name' => $recipeIng->name,
@@ -75,7 +76,9 @@ class RecipeController extends Controller
                     'carbs' => $recipe->carbs,
                     'protein' => $recipe->protein,
                     'fat' => $recipe->fat,
-                    'steps' => $recipe->steps,
+                    'youtube_video_url' => $recipe->youtube_video_url,
+                    'youtube_id' => $recipe->youtube_id,
+                    'steps' => $recipe->steps->pluck('instruction')->all(),
                     'match_percentage' => $matchPercentage,
                     'min_expiry_days' => $minExpiryDays == 9999 ? null : $minExpiryDays,
                     'matched_ingredients' => $matchedList,
@@ -107,7 +110,7 @@ class RecipeController extends Controller
         ]);
 
         $recipe = Recipe::with('ingredients')->findOrFail($request->recipe_id);
-        $stock = Inventory::all()->mapWithKeys(function ($item) {
+        $stock = Ingredient::all()->mapWithKeys(function ($item) {
             return [strtolower(trim($item->name)) => $item];
         })->all();
 
@@ -121,19 +124,17 @@ class RecipeController extends Controller
                 $stockItem = $stock[$ingNameLower];
                 
                 // 1. Calculate waste prevention stats
-                // If the ingredient is nearing expiry (<= 3 days)
                 $expiryDays = Carbon::today()->diffInDays($stockItem->expiry_date, false);
                 if ($expiryDays <= 3) {
-                    // Estimate weight in kg (for simple stats, convert gr/ml to kg/liter, pcs counted as 0.1kg each)
                     $weightKg = 0;
                     $qtyUsed = min($recipeIng->quantity, $stockItem->quantity);
                     
                     if (in_array(strtolower($stockItem->unit), ['gr', 'g'])) {
                         $weightKg = $qtyUsed / 1000;
                     } elseif (in_array(strtolower($stockItem->unit), ['ml', 'l'])) {
-                        $weightKg = $qtyUsed / 1000; // 1ml ≈ 1g
+                        $weightKg = $qtyUsed / 1000;
                     } else { // pcs, butir, etc.
-                        $weightKg = $qtyUsed * 0.1; // 1 piece ≈ 100g
+                        $weightKg = $qtyUsed * 0.1;
                     }
                     $wastePreventedKg += $weightKg;
                 }
@@ -151,13 +152,13 @@ class RecipeController extends Controller
         // Calculate Cost Savings: estimate Rp 20.000 per kg of food waste prevented, minimum Rp 10.000
         $totalCostSaved = round($wastePreventedKg * 20000);
         if ($wastePreventedKg > 0 && $totalCostSaved < 5000) {
-            $totalCostSaved = 10000; // minimum savings feel-good factor
+            $totalCostSaved = 10000;
         }
 
         // Always register some cost saved if cooked successfully
         if ($totalCostSaved == 0) {
-            $totalCostSaved = 15000; // flat estimate
-            $wastePreventedKg = 0.5; // flat estimate
+            $totalCostSaved = 15000;
+            $wastePreventedKg = 0.5;
         }
 
         // 3. Create cooking log
@@ -169,9 +170,24 @@ class RecipeController extends Controller
             'cooked_at' => Carbon::now()
         ]);
 
+        // 4. Create/update daily calorie log
+        $user = $request->user() ?? User::first();
+        if ($user) {
+            $todayStr = Carbon::today()->toDateString();
+            $dailyLog = DailyLog::firstOrCreate(
+                ['user_id' => $user->id, 'date' => $todayStr],
+                ['calories_consumed' => 0, 'carbs_consumed' => 0, 'protein_consumed' => 0, 'fat_consumed' => 0]
+            );
+            $dailyLog->calories_consumed += $recipe->calories;
+            $dailyLog->carbs_consumed += $recipe->carbs;
+            $dailyLog->protein_consumed += $recipe->protein;
+            $dailyLog->fat_consumed += $recipe->fat;
+            $dailyLog->save();
+        }
+
         return response()->json([
             'success' => true,
-            'message' => "Selamat! Memasak {$recipe->title} selesai. Stok kulkas telah diperbarui otomatis.",
+            'message' => "Selamat! Memasak {$recipe->title} selesai. Stok kulkas dan riwayat kalori harian telah diperbarui otomatis.",
             'data' => [
                 'log' => $log,
                 'waste_prevented_kg' => round($wastePreventedKg, 2),

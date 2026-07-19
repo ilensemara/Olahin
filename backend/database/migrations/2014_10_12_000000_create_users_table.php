@@ -23,6 +23,9 @@ return new class extends Migration
             $table->integer('target_carbs')->default(250);
             $table->integer('target_protein')->default(75);
             $table->integer('target_fat')->default(65);
+            $table->integer('weight')->default(60);
+            $table->integer('height')->default(165);
+            $table->integer('age')->default(25);
             $table->rememberToken();
             $table->timestamps();
         });

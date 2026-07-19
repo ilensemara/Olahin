@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Inventory;
+use App\Models\Ingredient;
 use Illuminate\Http\Request;
 
 class InventoryController extends Controller
 {
     public function index()
     {
-        $items = Inventory::orderBy('expiry_date', 'asc')->get();
+        $items = Ingredient::orderBy('expiry_date', 'asc')->get();
         return response()->json([
             'success' => true,
             'data' => $items
@@ -29,7 +29,7 @@ class InventoryController extends Controller
         $name = trim($request->name);
         
         // Find existing item case-insensitively
-        $existingItem = Inventory::whereRaw('LOWER(TRIM(name)) = ?', [strtolower($name)])->first();
+        $existingItem = Ingredient::whereRaw('LOWER(TRIM(name)) = ?', [strtolower($name)])->first();
 
         if ($existingItem) {
             $existingItem->quantity += $request->quantity;
@@ -46,7 +46,7 @@ class InventoryController extends Controller
             
             $item = $existingItem;
         } else {
-            $item = Inventory::create([
+            $item = Ingredient::create([
                 'name' => $name,
                 'quantity' => $request->quantity,
                 'unit' => $request->unit,
@@ -64,7 +64,7 @@ class InventoryController extends Controller
 
     public function update(Request $request, $id)
     {
-        $item = Inventory::findOrFail($id);
+        $item = Ingredient::findOrFail($id);
 
         $request->validate([
             'name' => 'sometimes|string',
@@ -85,7 +85,7 @@ class InventoryController extends Controller
 
     public function destroy($id)
     {
-        $item = Inventory::findOrFail($id);
+        $item = Ingredient::findOrFail($id);
         $item->delete();
 
         return response()->json([

@@ -1,0 +1,82 @@
+@import "tailwindcss";
+
+@theme {
+  --color-nature-cream: #F4F3EA;
+  --color-nature-card: #FFFFFF;
+  --color-nature-input: #EAE8DC;
+  --color-nature-forest: #2C3529;
+  --color-nature-zaitun: #4D5C48;
+  --color-nature-olive: #6E8067;
+  --color-nature-sage: #D1D8CD;
+  --color-nature-mint: #EBF0E9;
+  --color-nature-red: #C85C5C;
+  --color-nature-yellow: #DF9D4F;
+  --font-sans: "Outfit", "Inter", "system-ui", "sans-serif";
+}
+/* Custom scrollbars for a clean mobile look */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(44, 62, 53, 0.1);
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(44, 62, 53, 0.2);
+}
+
+/* Global resets for mobile app emulation */
+body {
+  font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* App transition fade-in effect */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.25s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+/* Slide transitions for views */
+.slide-enter-active,
+.slide-leave-active {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+.slide-enter-from {
+  transform: translateX(100%);
+  opacity: 0;
+}
+.slide-leave-to {
+  transform: translateX(-100%);
+  opacity: 0;
+}
+
+/* Success ring pulse animation */
+@keyframes ring-pulse {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(0.95);
+    opacity: 0.5;
+  }
+}
+.pulse-ring {
+  animation: ring-pulse 3s infinite ease-in-out;
+}

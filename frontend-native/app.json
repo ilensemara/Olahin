@@ -1,0 +1,49 @@
+{
+  "expo": {
+    "name": "frontend",
+    "slug": "frontend",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "Aplikasi Olahin memerlukan akses kamera untuk mengambil foto bahan makanan di kulkas Anda.",
+        "NSPhotoLibraryUsageDescription": "Aplikasi Olahin memerlukan akses galeri foto untuk memilih foto bahan makanan di kulkas Anda.",
+        "NSMicrophoneUsageDescription": "Aplikasi Olahin memerlukan akses mikrofon untuk merekam voice note bahan makanan Anda."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Aplikasi Olahin memerlukan akses kamera untuk mendeteksi bahan makanan."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Aplikasi Olahin memerlukan akses galeri foto untuk mendeteksi bahan makanan."
+        }
+      ],
+      [
+        "expo-av",
+        {
+          "microphonePermission": "Aplikasi Olahin memerlukan akses mikrofon untuk merekam voice note bahan makanan."
+        }
+      ]
+    ]
+  }
+}

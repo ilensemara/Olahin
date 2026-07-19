@@ -4,6 +4,12 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\User;
+use App\Models\Ingredient;
+use App\Models\Recipe;
+use App\Models\RecipeStep;
+use App\Models\DailyLog;
+use App\Models\CookingLog;
 
 class DatabaseSeeder extends Seeder
 {
@@ -15,7 +21,7 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         // 1. Seed Default User
-        \App\Models\User::create([
+        $user = User::create([
             'name' => 'Budi Santoso',
             'email' => 'user@olahin.com',
             'password' => bcrypt('password'),
@@ -23,6 +29,9 @@ class DatabaseSeeder extends Seeder
             'target_carbs' => 250,
             'target_protein' => 75,
             'target_fat' => 65,
+            'weight' => 65,
+            'height' => 170,
+            'age' => 26,
         ]);
 
         // 2. Seed Refrigerator Stock (Kulkas Saya)
@@ -38,7 +47,7 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($fridgeItems as $item) {
-            \App\Models\Inventory::create($item);
+            Ingredient::create($item);
         }
 
         // 3. Seed Recipes & Ingredients
@@ -51,7 +60,8 @@ class DatabaseSeeder extends Seeder
                 'carbs' => 60,
                 'protein' => 12,
                 'fat' => 15,
-                'video_url' => 'https://youtu.be/78PjgDRsAnE',
+                'youtube_video_url' => 'https://www.youtube.com/watch?v=78PjgDRsAnE',
+                'youtube_id' => '78PjgDRsAnE',
                 'ingredients' => [
                     ['name' => 'Telur', 'quantity' => 1, 'unit' => 'pcs'],
                     ['name' => 'Bawang Merah', 'quantity' => 15, 'unit' => 'gr'],
@@ -75,7 +85,8 @@ class DatabaseSeeder extends Seeder
                 'carbs' => 12,
                 'protein' => 4,
                 'fat' => 1,
-                'video_url' => 'https://youtu.be/hX21Fh-6P-8',
+                'youtube_video_url' => 'https://www.youtube.com/watch?v=hX21Fh-6P-8',
+                'youtube_id' => 'hX21Fh-6P-8',
                 'ingredients' => [
                     ['name' => 'Bayam', 'quantity' => 200, 'unit' => 'gr'],
                     ['name' => 'Bawang Merah', 'quantity' => 10, 'unit' => 'gr'],
@@ -96,7 +107,8 @@ class DatabaseSeeder extends Seeder
                 'carbs' => 4,
                 'protein' => 13,
                 'fat' => 17,
-                'video_url' => 'https://youtu.be/aI7yR5fV0Lw',
+                'youtube_video_url' => 'https://www.youtube.com/watch?v=aI7yR5fV0Lw',
+                'youtube_id' => 'aI7yR5fV0Lw',
                 'ingredients' => [
                     ['name' => 'Telur', 'quantity' => 2, 'unit' => 'pcs'],
                     ['name' => 'Cabai Merah', 'quantity' => 15, 'unit' => 'gr'],
@@ -106,7 +118,7 @@ class DatabaseSeeder extends Seeder
                     "Kocok lepas 2 butir telur di mangkuk kecil.",
                     "Masukkan irisan cabai merah dan sedikit garam, kocok hingga rata.",
                     "Panaskan 10ml minyak goreng di wajan teflon.",
-                    "Tuang telur kocok, masa dengan api sedang hingga kecokelatan di kedua sisi."
+                    "Tuang telur kocok, masak dengan api sedang hingga kecokelatan di kedua sisi."
                 ]
             ],
             [
@@ -117,7 +129,8 @@ class DatabaseSeeder extends Seeder
                 'carbs' => 10,
                 'protein' => 5,
                 'fat' => 6,
-                'video_url' => 'https://youtu.be/4eR_T1uP4U8',
+                'youtube_video_url' => 'https://www.youtube.com/watch?v=4eR_T1uP4U8',
+                'youtube_id' => '4eR_T1uP4U8',
                 'ingredients' => [
                     ['name' => 'Bayam', 'quantity' => 250, 'unit' => 'gr'],
                     ['name' => 'Bawang Merah', 'quantity' => 10, 'unit' => 'gr'],
@@ -135,7 +148,7 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($recipes as $r) {
-            $recipeModel = \App\Models\Recipe::create([
+            $recipeModel = Recipe::create([
                 'title' => $r['title'],
                 'description' => $r['description'],
                 'prep_time' => $r['prep_time'],
@@ -143,28 +156,51 @@ class DatabaseSeeder extends Seeder
                 'carbs' => $r['carbs'],
                 'protein' => $r['protein'],
                 'fat' => $r['fat'],
-                'video_url' => $r['video_url'] ?? null,
-                'steps' => $r['steps'],
+                'youtube_video_url' => $r['youtube_video_url'] ?? null,
+                'youtube_id' => $r['youtube_id'] ?? null,
             ]);
 
             foreach ($r['ingredients'] as $ing) {
                 $recipeModel->ingredients()->create($ing);
             }
+
+            foreach ($r['steps'] as $idx => $stepInst) {
+                $recipeModel->steps()->create([
+                    'step_number' => $idx + 1,
+                    'instruction' => $stepInst
+                ]);
+            }
         }
 
-        // 4. Seed Cooking Logs (Laporan Limbah 7 Hari Terakhir)
+        // 4. Seed Daily Calorie Logs (7 Hari Terakhir)
+        $dailyCalories = [
+            ['date' => $now->copy()->subDays(6)->toDateString(), 'calories_consumed' => 1750, 'carbs_consumed' => 220, 'protein_consumed' => 68, 'fat_consumed' => 58],
+            ['date' => $now->copy()->subDays(5)->toDateString(), 'calories_consumed' => 1920, 'carbs_consumed' => 240, 'protein_consumed' => 72, 'fat_consumed' => 62],
+            ['date' => $now->copy()->subDays(4)->toDateString(), 'calories_consumed' => 1550, 'carbs_consumed' => 190, 'protein_consumed' => 60, 'fat_consumed' => 45],
+            ['date' => $now->copy()->subDays(3)->toDateString(), 'calories_consumed' => 2050, 'carbs_consumed' => 260, 'protein_consumed' => 80, 'fat_consumed' => 70],
+            ['date' => $now->copy()->subDays(2)->toDateString(), 'calories_consumed' => 1800, 'carbs_consumed' => 230, 'protein_consumed' => 70, 'fat_consumed' => 60],
+            ['date' => $now->copy()->subDays(1)->toDateString(), 'calories_consumed' => 1650, 'carbs_consumed' => 210, 'protein_consumed' => 65, 'fat_consumed' => 55],
+            ['date' => $now->copy()->toDateString(), 'calories_consumed' => 1240, 'carbs_consumed' => 160, 'protein_consumed' => 50, 'fat_consumed' => 40],
+        ];
+
+        foreach ($dailyCalories as $log) {
+            DailyLog::create(array_merge(['user_id' => $user->id], $log));
+        }
+
+        // 5. Seed Cooking Logs (Laporan Limbah 7 Hari Terakhir)
         $logs = [
             ['recipe_title' => 'Sayur Sop Ayam', 'waste_prevented_kg' => 0.8, 'cost_saved_rp' => 18000, 'cooked_at' => $now->copy()->subDays(6)],
             ['recipe_title' => 'Tumis Kangkung', 'waste_prevented_kg' => 1.2, 'cost_saved_rp' => 24000, 'cooked_at' => $now->copy()->subDays(5)],
             ['recipe_title' => 'Nasi Goreng Telur', 'waste_prevented_kg' => 0.4, 'cost_saved_rp' => 12000, 'cooked_at' => $now->copy()->subDays(4)],
-            ['recipe_title' => 'Bayam Bening', 'waste_prevented_kg' => 1.5, 'cost_saved_rp' => 30000, 'cooked_at' => $now->copy()->subDays(3)],
+            ['recipe_title' => 'Bayam Bening Segar', 'waste_prevented_kg' => 1.5, 'cost_saved_rp' => 30000, 'cooked_at' => $now->copy()->subDays(3)],
             ['recipe_title' => 'Orek Tempe', 'waste_prevented_kg' => 0.6, 'cost_saved_rp' => 15000, 'cooked_at' => $now->copy()->subDays(2)],
             ['recipe_title' => 'Telur Dadar Cabai', 'waste_prevented_kg' => 1.1, 'cost_saved_rp' => 22000, 'cooked_at' => $now->copy()->subDays(1)],
-            ['recipe_title' => 'Ayam Goreng', 'waste_prevented_kg' => 1.9, 'cost_saved_rp' => 45000, 'cooked_at' => $now],
+            ['recipe_title' => 'Nasi Goreng Telur', 'waste_prevented_kg' => 1.9, 'cost_saved_rp' => 45000, 'cooked_at' => $now],
         ];
 
         foreach ($logs as $log) {
-            \App\Models\CookingLog::create($log);
+            CookingLog::create($log);
         }
     }
 }
+

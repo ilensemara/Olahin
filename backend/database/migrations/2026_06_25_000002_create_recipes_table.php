@@ -17,8 +17,8 @@ return new class extends Migration
             $table->float('carbs');
             $table->float('protein');
             $table->float('fat');
-            $table->string('video_url')->nullable();
-            $table->json('steps')->nullable();
+            $table->string('youtube_video_url')->nullable();
+            $table->string('youtube_id')->nullable();
             $table->timestamps();
         });
     }

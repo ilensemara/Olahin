@@ -46,32 +46,24 @@ IF EXIST "%~dp0ai-engine\main.py" (
 )
 
 REM ------------------------------------------------------------------
-REM 3. Start Expo Metro Bundler (WEB mode - jalan di browser tanpa native module)
+REM 3. Start Vite Vue.js Dev Server
 REM ------------------------------------------------------------------
 echo.
-echo [3/3] Starting Expo di MODE WEB (browser laptop)...
-start "Olahin Frontend (Web)" cmd /k "cd /d "%~dp0frontend" && npx expo start --web"
+echo [3/3] Starting Vite Vue.js Dev Server...
+start "Olahin Frontend (Web)" cmd /k "cd /d "%~dp0frontend" && npm run dev"
+
 
 echo.
 echo =======================================================
 echo                 CARA MEMBUKA APLIKASI
 echo =======================================================
 echo Buka di BROWSER LAPTOP (paling mudah, semua fitur jalan):
-echo    - Expo otomatis buka browser; jika tidak, buka:
-echo      http://localhost:8081  (atau tekan 'w' di jendela depan)
-echo    - Kamera  -> pilih foto file (kamera HP tdk ada di web, galeri jalan)
-echo    - Voice   -> rekam lewat mikrofon browser (MediaRecorder)
-echo    - Video   -> langsung putar di browser
+echo    - Buka URL yang tertera di konsol Vite dev server:
+echo      http://localhost:5173
+echo    - Kamera  -> Pindai bahan tiruan interaktif di web
+echo    - Voice   -> Rekam suara lewat mikrofon browser (Web Speech API)
+echo    - Video   -> Putar langsung video YouTube dalam modal
 echo.
-echo Kalau ingin di HP (Expo Go), tutup jendela ini lalu jalankan manual:
-echo    cd frontend && npx expo start   (lalu scan QR, butuh dev build utk native)
-echo.
-echo =======================================================
-echo                 TROUBLESHOOTING
-echo =======================================================
-echo - Backend error: pastikan PHP & Composer terpasang dan di PATH.
-echo - AI engine mati: tidak masalah, Laravel pakai simulasi otomatis.
-echo - Browser blank: buka http://localhost:8081 , atau restart skrip.
 echo =======================================================
 echo.
 pause

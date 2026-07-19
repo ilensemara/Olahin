@@ -17,16 +17,17 @@ class Recipe extends Model
         'carbs',
         'protein',
         'fat',
-        'video_url',
-        'steps'
-    ];
-
-    protected $casts = [
-        'steps' => 'array'
+        'youtube_video_url',
+        'youtube_id'
     ];
 
     public function ingredients()
     {
         return $this->hasMany(RecipeIngredient::class);
+    }
+
+    public function steps()
+    {
+        return $this->hasMany(RecipeStep::class)->orderBy('step_number', 'asc');
     }
 }

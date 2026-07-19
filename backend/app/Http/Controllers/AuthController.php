@@ -13,7 +13,10 @@ class AuthController extends Controller
         $request->validate([
             'name' => 'required|string',
             'email' => 'required|email|unique:users',
-            'password' => 'required|string|min:6'
+            'password' => 'required|string|min:6',
+            'weight' => 'sometimes|integer',
+            'height' => 'sometimes|integer',
+            'age' => 'sometimes|integer',
         ]);
 
         $user = User::create([
@@ -23,7 +26,10 @@ class AuthController extends Controller
             'target_calories' => 2000,
             'target_carbs' => 250,
             'target_protein' => 75,
-            'target_fat' => 65
+            'target_fat' => 65,
+            'weight' => $request->weight ?? 60,
+            'height' => $request->height ?? 165,
+            'age' => $request->age ?? 25,
         ]);
 
         $token = $user->createToken('auth_token')->plainTextToken;
@@ -77,11 +83,14 @@ class AuthController extends Controller
             'target_calories' => 'sometimes|integer|min:0',
             'target_carbs' => 'sometimes|integer|min:0',
             'target_protein' => 'sometimes|integer|min:0',
-            'target_fat' => 'sometimes|integer|min:0'
+            'target_fat' => 'sometimes|integer|min:0',
+            'weight' => 'sometimes|integer|min:0',
+            'height' => 'sometimes|integer|min:0',
+            'age' => 'sometimes|integer|min:0',
         ]);
 
         $user->update($request->only([
-            'name', 'target_calories', 'target_carbs', 'target_protein', 'target_fat'
+            'name', 'target_calories', 'target_carbs', 'target_protein', 'target_fat', 'weight', 'height', 'age'
         ]));
 
         return response()->json([

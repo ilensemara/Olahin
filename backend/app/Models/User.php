@@ -25,6 +25,9 @@ class User extends Authenticatable
         'target_carbs',
         'target_protein',
         'target_fat',
+        'weight',
+        'height',
+        'age',
     ];
 
     /**
