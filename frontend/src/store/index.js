@@ -52,7 +52,7 @@ export const useAppStore = defineStore('app', {
 
   getters: {
     isAuthenticated: (state) => !!state.token,
-    
+
     // Group fridge items by category
     categorizedFridge: (state) => {
       const groups = { Semua: state.fridgeItems }
@@ -156,7 +156,7 @@ export const useAppStore = defineStore('app', {
     async login(email, password) {
       this.loading = true
       await this.checkConnection()
-      
+
       if (this.isOnline) {
         try {
           const res = await axios.post(`${API_URL}/auth/login`, { email, password })
@@ -192,7 +192,7 @@ export const useAppStore = defineStore('app', {
     async register(name, email, password) {
       this.loading = true
       await this.checkConnection()
-      
+
       if (this.isOnline) {
         try {
           const res = await axios.post(`${API_URL}/auth/register`, { name, email, password })
@@ -397,32 +397,32 @@ export const useAppStore = defineStore('app', {
     // Load fallback data for standalone offline usage
     loadOfflineData() {
       const today = new Date()
-      
+
       // Stock
       this.fridgeItems = [
-        { id: 1, name: 'Telur', quantity: 6, unit: 'pcs', expiry_date: new Date(today.getTime() + 5*24*60*60*1000).toISOString().split('T')[0], category: 'Daging & Telur' },
-        { id: 2, name: 'Bawang Merah', quantity: 150, unit: 'gr', expiry_date: new Date(today.getTime() + 14*24*60*60*1000).toISOString().split('T')[0], category: 'Bumbu' },
-        { id: 3, name: 'Bawang Putih', quantity: 80, unit: 'gr', expiry_date: new Date(today.getTime() + 20*24*60*60*1000).toISOString().split('T')[0], category: 'Bumbu' },
-        { id: 4, name: 'Cabai Merah', quantity: 50, unit: 'gr', expiry_date: new Date(today.getTime() + 2*24*60*60*1000).toISOString().split('T')[0], category: 'Sayuran' },
-        { id: 5, name: 'Bayam', quantity: 300, unit: 'gr', expiry_date: new Date(today.getTime() + 1*24*60*60*1000).toISOString().split('T')[0], category: 'Sayuran' },
-        { id: 6, name: 'Minyak Goreng', quantity: 1000, unit: 'ml', expiry_date: new Date(today.getTime() + 90*24*60*60*1000).toISOString().split('T')[0], category: 'Minyak & Lemak' },
-        { id: 7, name: 'Kecap Manis', quantity: 250, unit: 'ml', expiry_date: new Date(today.getTime() + 60*24*60*60*1000).toISOString().split('T')[0], category: 'Bumbu' },
+        { id: 1, name: 'Telur', quantity: 6, unit: 'pcs', expiry_date: new Date(today.getTime() + 5 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], category: 'Daging & Telur' },
+        { id: 2, name: 'Bawang Merah', quantity: 150, unit: 'gr', expiry_date: new Date(today.getTime() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], category: 'Bumbu' },
+        { id: 3, name: 'Bawang Putih', quantity: 80, unit: 'gr', expiry_date: new Date(today.getTime() + 20 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], category: 'Bumbu' },
+        { id: 4, name: 'Cabai Merah', quantity: 50, unit: 'gr', expiry_date: new Date(today.getTime() + 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], category: 'Sayuran' },
+        { id: 5, name: 'Bayam', quantity: 300, unit: 'gr', expiry_date: new Date(today.getTime() + 1 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], category: 'Sayuran' },
+        { id: 6, name: 'Minyak Goreng', quantity: 1000, unit: 'ml', expiry_date: new Date(today.getTime() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], category: 'Minyak & Lemak' },
+        { id: 7, name: 'Kecap Manis', quantity: 250, unit: 'ml', expiry_date: new Date(today.getTime() + 60 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], category: 'Bumbu' },
       ]
 
       // Weekly calories chart data fallback
       const dayNames = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min']
       const chart_data = []
       for (let i = 6; i >= 0; i--) {
-        const date = new Date(today.getTime() - i*24*60*60*1000)
+        const date = new Date(today.getTime() - i * 24 * 60 * 60 * 1000)
         const dateStr = date.toISOString().split('T')[0]
         const dayLabel = dayNames[(date.getDay() + 6) % 7]
-        
+
         // Mock caloric intake values
         const seedCalories = [1750, 1920, 1550, 2050, 1800, 1650, 1240]
         const seedCarbs = [220, 240, 190, 260, 230, 210, 160]
         const seedProtein = [68, 72, 60, 80, 70, 65, 50]
         const seedFat = [58, 62, 45, 70, 60, 55, 40]
-        
+
         chart_data.push({
           date: dateStr,
           day: dayLabel,
@@ -466,8 +466,8 @@ export const useAppStore = defineStore('app', {
           carbs: 60,
           protein: 12,
           fat: 15,
-          youtube_video_url: 'https://www.youtube.com/watch?v=78PjgDRsAnE',
-          youtube_id: '78PjgDRsAnE',
+          youtube_video_url: 'https://www.youtube.com/watch?v=i6yHVLgrELQ',
+          youtube_id: 'i6yHVLgrELQ',
           ingredients: [
             { name: 'Telur', quantity: 1, unit: 'pcs' },
             { name: 'Bawang Merah', quantity: 15, unit: 'gr' },
@@ -492,8 +492,8 @@ export const useAppStore = defineStore('app', {
           carbs: 12,
           protein: 4,
           fat: 1,
-          youtube_video_url: 'https://www.youtube.com/watch?v=hX21Fh-6P-8',
-          youtube_id: 'hX21Fh-6P-8',
+          youtube_video_url: 'https://www.youtube.com/watch?v=RN8I53YeL04',
+          youtube_id: 'RN8I53YeL04',
           ingredients: [
             { name: 'Bayam', quantity: 200, unit: 'gr' },
             { name: 'Bawang Merah', quantity: 10, unit: 'gr' },
@@ -515,8 +515,8 @@ export const useAppStore = defineStore('app', {
           carbs: 4,
           protein: 13,
           fat: 17,
-          youtube_video_url: 'https://www.youtube.com/watch?v=aI7yR5fV0Lw',
-          youtube_id: 'aI7yR5fV0Lw',
+          youtube_video_url: 'https://www.youtube.com/watch?v=6uKarev2O8w',
+          youtube_id: '6uKarev2O8w',
           ingredients: [
             { name: 'Telur', quantity: 2, unit: 'pcs' },
             { name: 'Cabai Merah', quantity: 15, unit: 'gr' },
@@ -538,8 +538,8 @@ export const useAppStore = defineStore('app', {
           carbs: 10,
           protein: 5,
           fat: 6,
-          youtube_video_url: 'https://www.youtube.com/watch?v=4eR_T1uP4U8',
-          youtube_id: '4eR_T1uP4U8',
+          youtube_video_url: 'https://www.youtube.com/watch?v=X3FzA3wC29g',
+          youtube_id: 'X3FzA3wC29g',
           ingredients: [
             { name: 'Bayam', quantity: 250, unit: 'gr' },
             { name: 'Bawang Merah', quantity: 10, unit: 'gr' },
@@ -573,7 +573,7 @@ export const useAppStore = defineStore('app', {
           if (stockMap[nameLower]) {
             matchCount++
             const stockItem = stockMap[nameLower]
-            
+
             const expiryDate = new Date(stockItem.expiry_date)
             const today = new Date()
             const diffTime = expiryDate - today
@@ -600,7 +600,7 @@ export const useAppStore = defineStore('app', {
         })
 
         const matchPct = Math.round((matchCount / recipe.ingredients.length) * 100)
-        
+
         if (matchPct >= 50) {
           matched.push({
             ...recipe,

@@ -60,8 +60,8 @@ class DatabaseSeeder extends Seeder
                 'carbs' => 60,
                 'protein' => 12,
                 'fat' => 15,
-                'youtube_video_url' => 'https://www.youtube.com/watch?v=78PjgDRsAnE',
-                'youtube_id' => '78PjgDRsAnE',
+                'youtube_video_url' => 'https://www.youtube.com/watch?v=i6yHVLgrELQ',
+                'youtube_id' => 'i6yHVLgrELQ',
                 'ingredients' => [
                     ['name' => 'Telur', 'quantity' => 1, 'unit' => 'pcs'],
                     ['name' => 'Bawang Merah', 'quantity' => 15, 'unit' => 'gr'],
@@ -85,8 +85,8 @@ class DatabaseSeeder extends Seeder
                 'carbs' => 12,
                 'protein' => 4,
                 'fat' => 1,
-                'youtube_video_url' => 'https://www.youtube.com/watch?v=hX21Fh-6P-8',
-                'youtube_id' => 'hX21Fh-6P-8',
+                'youtube_video_url' => 'https://www.youtube.com/watch?v=RN8I53YeL04',
+                'youtube_id' => 'RN8I53YeL04',
                 'ingredients' => [
                     ['name' => 'Bayam', 'quantity' => 200, 'unit' => 'gr'],
                     ['name' => 'Bawang Merah', 'quantity' => 10, 'unit' => 'gr'],
@@ -107,8 +107,8 @@ class DatabaseSeeder extends Seeder
                 'carbs' => 4,
                 'protein' => 13,
                 'fat' => 17,
-                'youtube_video_url' => 'https://www.youtube.com/watch?v=aI7yR5fV0Lw',
-                'youtube_id' => 'aI7yR5fV0Lw',
+                'youtube_video_url' => 'https://www.youtube.com/watch?v=6uKarev2O8w',
+                'youtube_id' => '6uKarev2O8w',
                 'ingredients' => [
                     ['name' => 'Telur', 'quantity' => 2, 'unit' => 'pcs'],
                     ['name' => 'Cabai Merah', 'quantity' => 15, 'unit' => 'gr'],
@@ -129,8 +129,8 @@ class DatabaseSeeder extends Seeder
                 'carbs' => 10,
                 'protein' => 5,
                 'fat' => 6,
-                'youtube_video_url' => 'https://www.youtube.com/watch?v=4eR_T1uP4U8',
-                'youtube_id' => '4eR_T1uP4U8',
+                'youtube_video_url' => 'https://www.youtube.com/watch?v=X3FzA3wC29g',
+                'youtube_id' => 'X3FzA3wC29g',
                 'ingredients' => [
                     ['name' => 'Bayam', 'quantity' => 250, 'unit' => 'gr'],
                     ['name' => 'Bawang Merah', 'quantity' => 10, 'unit' => 'gr'],
