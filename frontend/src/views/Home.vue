@@ -8,6 +8,12 @@ const store = useAppStore()
 
 const searchQuery = ref('')
 const isNotificationOpen = ref(false)
+const hasUnreadNotifications = ref(true)
+
+const openNotifications = () => {
+  isNotificationOpen.value = true
+  hasUnreadNotifications.value = false
+}
 
 // Filter matched recipes based on search query
 const filteredRecipes = computed(() => {
@@ -60,13 +66,13 @@ onMounted(() => {
       <div class="flex items-center gap-3">
         <!-- Notification Bell (Clickable, matches mockup notification indicator) -->
         <button 
-          @click="isNotificationOpen = true"
+          @click="openNotifications"
           class="relative p-2 bg-white rounded-full border border-gray-150 shadow-sm active:scale-95 transition-transform text-nature-zaitun"
         >
           <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
             <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
           </svg>
-          <span class="absolute top-1 right-1 w-1.5 h-1.5 bg-rose-500 rounded-full"></span>
+          <span v-if="hasUnreadNotifications" class="absolute top-1 right-1 w-1.5 h-1.5 bg-rose-500 rounded-full"></span>
         </button>
         <!-- Profile Avatar (Budi Santoso photo placeholder) -->
         <img 
