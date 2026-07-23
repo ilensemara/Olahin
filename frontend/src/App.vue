@@ -29,32 +29,61 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="flex flex-col h-full w-full bg-nature-cream relative text-nature-forest overflow-hidden">
-    <!-- Top Status Bar (Emulates smartphone UI) -->
-    <div class="px-6 py-2.5 flex justify-between items-center text-[10px] select-none z-50 font-bold tracking-wider"
-         :class="route.name === 'Splash' || route.name === 'Welcome' ? 'bg-transparent text-white/80 absolute top-0 left-0 right-0' : 'bg-nature-cream text-nature-forest border-b border-gray-150/40'">
-      <div class="flex items-center gap-1">
-        <span>Olahin</span>
-        <span v-if="!store.isOnline" class="bg-nature-red/90 text-white text-[8px] px-1 rounded font-extrabold uppercase animate-pulse">Offline</span>
+  <div class="flex flex-col h-screen w-full bg-nature-cream relative text-nature-forest overflow-hidden">
+    <!-- Desktop Responsive Navigation Header (Visible only on desktop/tablet) -->
+    <header v-if="showBottomNav" class="hidden md:flex justify-between items-center px-8 py-3.5 bg-white border-b border-gray-100 shadow-sm z-40">
+      <div class="flex items-center gap-2 cursor-pointer" @click="router.push('/home')">
+        <svg class="w-6.5 h-6.5 text-nature-zaitun" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 14h-2v-2h2v2zm0-4h-2V7h2v5z"/>
+        </svg>
+        <span class="text-xl font-extrabold text-nature-zaitun tracking-wider">Olahin</span>
       </div>
-      <div class="flex items-center gap-2">
-        <span class="flex items-center gap-0.5">
-          <!-- Signal Icon -->
-          <svg class="w-3 h-3 fill-current" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 19.4c-1.46-1.92-2.35-4.31-2.35-6.9 0-6.63 5.37-12 12-12s12 5.37 12 12c0 2.59-.89 4.98-2.35 6.9l-1.62-1.79C23.26 16.07 24 14.12 24 12c0-4.97-4.03-9-9-9zm0 4c-2.76 0-5 2.24-5 5 0 1.25.46 2.4 1.22 3.28l1.45-1.6C9.25 13.16 9 12.61 9 12c0-1.66 1.34-3 3-3s3 1.34 3 3c0 .61-.25 1.16-.67 1.68l1.45 1.6C16.54 14.4 17 13.25 17 12c0-2.76-2.24-5-5-5zm0 4c-.55 0-1 .45-1 1 0 .28.12.53.3.71l1.41-1.41c-.18-.18-.43-.3-.71-.3z"/></svg>
-          <!-- Wifi Icon -->
-          <svg class="w-3 h-3 fill-current" viewBox="0 0 24 24"><path d="M12 21l-12-12c2.5-2.5 6-4 12-4s9.5 1.5 12 4l-12 12z"/></svg>
-        </span>
-        <span>10:54</span>
-      </div>
+      <nav class="flex items-center gap-6">
+        <button 
+          @click="router.push('/home')" 
+          class="text-xs font-black uppercase tracking-wider transition-colors" 
+          :class="route.name === 'Home' ? 'text-nature-zaitun' : 'text-gray-400 hover:text-nature-zaitun'"
+        >
+          Home
+        </button>
+        <button 
+          @click="router.push('/fridge')" 
+          class="text-xs font-black uppercase tracking-wider transition-colors" 
+          :class="route.name === 'Fridge' || route.name === 'AddIngredient' ? 'text-nature-zaitun' : 'text-gray-400 hover:text-nature-zaitun'"
+        >
+          Kulkas
+        </button>
+        <button 
+          @click="router.push('/recipes')" 
+          class="text-xs font-black uppercase tracking-wider transition-colors" 
+          :class="route.name === 'RecipeRecommendations' || route.name === 'CookingGuide' ? 'text-nature-zaitun' : 'text-gray-400 hover:text-nature-zaitun'"
+        >
+          Resep
+        </button>
+        <button 
+          @click="router.push('/insights')" 
+          class="text-xs font-black uppercase tracking-wider transition-colors" 
+          :class="route.name === 'Insights' ? 'text-nature-zaitun' : 'text-gray-400 hover:text-nature-zaitun'"
+        >
+          Profil
+        </button>
+      </nav>
+    </header>
+
+    <!-- Offline Indicator Banner (Only shows when user is disconnected) -->
+    <div v-if="!store.isOnline" class="bg-nature-red text-white text-[10px] font-bold py-1 px-4 text-center z-50 animate-pulse flex items-center justify-center gap-1 shadow-sm">
+      <span>⚠️ Anda sedang offline (Aplikasi berjalan dalam mode lokal)</span>
     </div>
 
-    <!-- Main Content Panel -->
-    <div class="flex-1 overflow-y-auto relative flex flex-col pb-16" :class="{ 'pb-0': !showBottomNav }">
-      <router-view v-slot="{ Component }">
-        <transition name="fade" mode="out-in">
-          <component :is="Component" :key="route.path" />
-        </transition>
-      </router-view>
+    <!-- Main Content Panel (Responsive wrapped) -->
+    <div class="flex-1 overflow-y-auto relative flex flex-col pb-16 md:pb-6" :class="{ 'pb-0': !showBottomNav, 'md:pb-6': showBottomNav }">
+      <div class="w-full max-w-5xl mx-auto px-4 md:px-8 py-2 md:py-6 flex-1 flex flex-col">
+        <router-view v-slot="{ Component }">
+          <transition name="fade" mode="out-in">
+            <component :is="Component" :key="route.path" />
+          </transition>
+        </router-view>
+      </div>
     </div>
 
     <!-- Global Loading Overlay -->
@@ -63,8 +92,8 @@ onMounted(async () => {
       <p class="text-sm font-semibold text-nature-forest">Memproses data...</p>
     </div>
 
-    <!-- Persistent Bottom Navigation Bar -->
-    <nav v-if="showBottomNav" class="absolute bottom-0 left-0 right-0 h-16 bg-white border-t border-gray-100 flex justify-around items-center px-4 py-2 z-40 shadow-lg">
+    <!-- Persistent Bottom Navigation Bar (Visible on Mobile only) -->
+    <nav v-if="showBottomNav" class="md:hidden absolute bottom-0 left-0 right-0 h-16 bg-white border-t border-gray-100 flex justify-around items-center px-4 py-2 z-40 shadow-lg">
       <button 
         @click="router.push('/home')" 
         class="flex flex-col items-center justify-center flex-1 transition-colors py-1"

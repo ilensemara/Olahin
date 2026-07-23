@@ -8,7 +8,7 @@
     
     <!-- PWA Support -->
     <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#10b981">
+    <meta name="theme-color" content="#73C918">
     <link rel="apple-touch-icon" href="/images/logo-192.png">
 
     <!-- Google Fonts -->
@@ -27,8 +27,8 @@
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             
-            --accent-green: #10b981;
-            --accent-green-glow: rgba(16, 185, 129, 0.15);
+            --accent-green: #73C918;
+            --accent-green-glow: rgba(115, 201, 24, 0.15);
             --accent-red: #ef4444;
             --accent-red-glow: rgba(239, 68, 68, 0.15);
             --accent-yellow: #f59e0b;
@@ -36,7 +36,7 @@
             --accent-blue: #3b82f6;
             --accent-blue-glow: rgba(59, 130, 246, 0.15);
             
-            --gradient-accent: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --gradient-accent: linear-gradient(135deg, #73C918 0%, #5aad12 100%);
             --gradient-blue: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
             --gradient-dark: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
             --shadow-premium: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
@@ -60,7 +60,7 @@
             display: flex;
             overflow-x: hidden;
             background-image: 
-                radial-gradient(circle at 10% 20%, rgba(16, 185, 129, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 10% 20%, rgba(115, 201, 24, 0.05) 0%, transparent 40%),
                 radial-gradient(circle at 90% 80%, rgba(59, 130, 246, 0.05) 0%, transparent 40%);
         }
 
@@ -239,12 +239,12 @@
         .btn-primary {
             background: var(--gradient-accent);
             color: white;
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.25);
+            box-shadow: 0 4px 15px rgba(115, 201, 24, 0.25);
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+            box-shadow: 0 6px 20px rgba(115, 201, 24, 0.4);
         }
 
         .btn-secondary {
@@ -314,8 +314,8 @@
 
         .badge-green {
             background: var(--accent-green-glow);
-            color: #34d399;
-            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #73C918;
+            border: 1px solid rgba(115, 201, 24, 0.3);
         }
 
         /* Refrigerator List View styling */
@@ -418,7 +418,7 @@
 
         .recipe-card:hover {
             transform: translateY(-6px);
-            border-color: rgba(16, 185, 129, 0.3);
+            border-color: rgba(115, 201, 24, 0.3);
             box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
         }
 
@@ -605,7 +605,7 @@
 
         .form-control:focus {
             border-color: var(--accent-green);
-            box-shadow: 0 0 10px rgba(16, 185, 129, 0.15);
+            box-shadow: 0 0 10px rgba(115, 201, 24, 0.15);
         }
 
         .form-row {
@@ -672,7 +672,7 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+            box-shadow: 0 8px 25px rgba(115, 201, 24, 0.3);
             transition: all 0.25s ease;
         }
 
@@ -761,7 +761,7 @@
         }
 
         .stat-card:nth-child(1) .stat-icon {
-            background: rgba(16, 185, 129, 0.1);
+            background: rgba(115, 201, 24, 0.1);
             color: var(--accent-green);
         }
 
@@ -1996,7 +1996,7 @@
 
             recipe.matched_ingredients.forEach(ing => {
                 const row = document.createElement('div');
-                row.style.cssText = "display:flex; justify-content:space-between; font-size:14px; padding: 6px 12px; background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.15); border-radius: 6px; color: #34d399;";
+                row.style.cssText = "display:flex; justify-content:space-between; font-size:14px; padding: 6px 12px; background: rgba(115, 201, 24, 0.05); border: 1px solid rgba(115, 201, 24, 0.15); border-radius: 6px; color: #73C918;";
                 row.innerHTML = `
                     <span><i class="fa-solid fa-circle-check"></i> <strong>${ing.name}</strong></span>
                     <span>Tersedia: ${ing.qty_available} / Butuh: ${ing.qty_needed} ${ing.unit}</span>
@@ -2706,7 +2706,7 @@
                     applyBtn.style.borderColor = "";
                     
                     document.getElementById('transcriptBox').innerHTML += `
-                        <div style="margin-top: 14px; text-align: left; background: rgba(16, 185, 129, 0.05); border: 1px dashed var(--accent-green); padding: 12px; border-radius: 8px; font-size: 13px;">
+                        <div style="margin-top: 14px; text-align: left; background: rgba(115, 201, 24, 0.05); border: 1px dashed var(--accent-green); padding: 12px; border-radius: 8px; font-size: 13px;">
                             <strong style="color: var(--accent-green); display: block; margin-bottom: 6px;"><i class="fa-solid fa-wand-magic-sparkles"></i> AI Mengekstrak:</strong>
                             ${voiceItemsToProcess.map(item => `• ${item.name} (${item.quantity} ${item.unit})`).join('<br>')}
                         </div>

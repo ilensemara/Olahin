@@ -38,7 +38,7 @@ onMounted(() => {
   <div class="flex-1 bg-nature-cream flex flex-col p-5 overflow-y-auto">
     <!-- Header -->
     <div class="flex items-center gap-1 mb-4 pt-2">
-      <button @click="router.push('/home')" class="p-1 -ml-1 text-nature-forest hover:opacity-80">
+      <button @click="router.push('/home')" class="p-1 -ml-1 text-nature-forest hover:opacity-80 md:hidden">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
         </svg>
@@ -78,7 +78,7 @@ onMounted(() => {
 
     <!-- Recommended Recipes List -->
     <div class="flex-1 flex flex-col gap-4">
-      <div v-if="filteredRecipes.length > 0" class="flex flex-col gap-3.5">
+      <div v-if="filteredRecipes.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <div 
           v-for="recipe in filteredRecipes"
           :key="recipe.id"

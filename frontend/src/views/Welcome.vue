@@ -35,7 +35,7 @@ const handleSkip = () => {
     </div>
 
     <!-- Action Buttons & Skip option -->
-    <div class="relative z-10 flex flex-col w-full gap-3.5 pb-16">
+    <div class="relative z-10 flex flex-col w-full max-w-sm mx-auto gap-3.5 pb-16">
       <button 
         @click="router.push('/login')" 
         class="w-full py-3 bg-nature-zaitun hover:bg-emerald-800 active:scale-95 transition-all text-white font-bold rounded-full shadow-lg flex justify-center items-center text-sm tracking-wide"

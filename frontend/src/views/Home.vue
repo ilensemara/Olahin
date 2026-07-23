@@ -44,8 +44,8 @@ onMounted(() => {
 
 <template>
   <div class="flex-1 bg-nature-cream flex flex-col p-5 overflow-y-auto">
-    <!-- Header: Logo, Subtitle, Bell & Profile Avatar -->
-    <div class="flex justify-between items-center mb-5 pt-2">
+    <!-- Header: Logo, Subtitle, Bell & Profile Avatar (Hidden on Desktop since Top Navbar exists) -->
+    <div class="flex justify-between items-center mb-5 pt-2 md:hidden">
       <div>
         <div class="flex items-center gap-1.5">
           <!-- Logo symbol (Bowl with leaves) -->
@@ -154,9 +154,9 @@ onMounted(() => {
       <h4 class="text-xs font-black uppercase tracking-wider text-nature-forest">Recommended</h4>
     </div>
 
-    <!-- Recommended 2-Column Grid (Matches mockup style) -->
+    <!-- Recommended Grid -->
     <div class="flex-1">
-      <div v-if="filteredRecipes.length > 0" class="grid grid-cols-2 gap-3.5">
+      <div v-if="filteredRecipes.length > 0" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3.5">
         <div 
           v-for="recipe in filteredRecipes" 
           :key="recipe.id"

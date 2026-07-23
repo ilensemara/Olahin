@@ -31,8 +31,8 @@ REM ------------------------------------------------------------------
 REM 1. Start Laravel Backend (port 8000)
 REM ------------------------------------------------------------------
 echo.
-echo [1/3] Starting Laravel Backend on http://127.0.0.1:8000 ...
-start "Olahin Backend" cmd /k "cd /d "%~dp0backend" && php artisan serve --port=8000"
+echo [1/3] Starting Laravel Backend on http://0.0.0.0:8000 (Local Network) ...
+start "Olahin Backend" cmd /k "cd /d "%~dp0backend" && php artisan serve --host=0.0.0.0 --port=8000"
 
 REM ------------------------------------------------------------------
 REM 2. Start AI Engine FastAPI (port 8001) - optional, fallback simulasi
@@ -40,7 +40,7 @@ REM ------------------------------------------------------------------
 echo.
 echo [2/3] Mencoba menyalakan AI Engine (FastAPI) di port 8001...
 IF EXIST "%~dp0ai-engine\main.py" (
-  start "Olahin AI Engine" cmd /k "cd /d "%~dp0ai-engine" && python -m uvicorn main:app --host 127.0.0.1 --port 8001"
+  start "Olahin AI Engine" cmd /k "cd /d "%~dp0ai-engine" && python -m uvicorn main:app --host 0.0.0.0 --port 8001"
 ) ELSE (
   echo     - Folder ai-engine tidak ditemukan, Laravel akan pakai fallback simulasi.
 )
@@ -49,8 +49,8 @@ REM ------------------------------------------------------------------
 REM 3. Start Vite Vue.js Dev Server
 REM ------------------------------------------------------------------
 echo.
-echo [3/3] Starting Vite Vue.js Dev Server...
-start "Olahin Frontend (Web)" cmd /k "cd /d "%~dp0frontend" && npm run dev"
+echo [3/3] Starting Vite Vue.js Dev Server (Exposed on Local Network)...
+start "Olahin Frontend (Web)" cmd /k "cd /d "%~dp0frontend" && npm run dev -- --host"
 
 
 echo.

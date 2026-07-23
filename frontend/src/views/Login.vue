@@ -44,7 +44,7 @@ const handleLogin = async () => {
     </div>
 
     <!-- Glassmorphic Login Card -->
-    <div class="relative z-10 my-auto bg-white/90 backdrop-blur-md rounded-[35px] border border-white/20 p-6 shadow-2xl flex flex-col gap-4 mt-8 mb-6">
+    <div class="relative z-10 my-auto mx-auto w-full max-w-sm bg-white/90 backdrop-blur-md rounded-[35px] border border-white/20 p-6 shadow-2xl flex flex-col gap-4 mt-8 mb-6">
       <div class="text-center mb-2">
         <h2 class="text-xl font-extrabold text-nature-forest tracking-wide">Masuk</h2>
       </div>

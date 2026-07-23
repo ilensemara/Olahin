@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
 
-// API base URL configuration
-const API_URL = 'http://localhost:8000/api'
+// API base URL configuration (uses Vite server proxy)
+const API_URL = '/api'
 
 // Set up default axios headers from localStorage if token exists
 const token = localStorage.getItem('auth_token')

@@ -156,7 +156,7 @@ onMounted(() => {
     <!-- Header title -->
     <div class="flex justify-between items-center mb-4 pt-2">
       <div class="flex items-center gap-1">
-        <button @click="router.push('/home')" class="p-1 -ml-1 text-nature-forest hover:opacity-80">
+        <button @click="router.push('/home')" class="p-1 -ml-1 text-nature-forest hover:opacity-80 md:hidden">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
           </svg>
@@ -206,7 +206,7 @@ onMounted(() => {
 
       <!-- Ingredient list cards (Matches mockup screen 7) -->
       <div class="flex-1 flex flex-col gap-3 min-h-[300px] mb-12">
-        <div v-if="filteredFridge.length > 0" class="flex flex-col gap-2.5">
+        <div v-if="filteredFridge.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           <div 
             v-for="item in filteredFridge" 
             :key="item.id"
@@ -252,10 +252,10 @@ onMounted(() => {
         </div>
       </div>
 
-      <!-- Floating Plus Button at bottom right (Matches mockup screen 7) -->
+      <!-- Floating Plus Button at bottom right -->
       <button 
         @click="router.push('/add-ingredient')"
-        class="absolute bottom-20 right-6 w-12 h-12 bg-nature-zaitun hover:bg-emerald-800 text-white rounded-full flex justify-center items-center shadow-lg active:scale-95 transition-all z-20 border-2 border-white"
+        class="absolute bottom-20 md:bottom-6 right-6 w-12 h-12 bg-nature-zaitun hover:bg-emerald-800 text-white rounded-full flex justify-center items-center shadow-lg active:scale-95 transition-all z-20 border-2 border-white"
       >
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
