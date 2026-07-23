@@ -492,8 +492,8 @@ export const useAppStore = defineStore('app', {
           carbs: 12,
           protein: 4,
           fat: 1,
-          youtube_video_url: 'https://www.youtube.com/watch?v=RN8I53YeL04',
-          youtube_id: 'RN8I53YeL04',
+          youtube_video_url: 'https://www.youtube.com/watch?v=SId6rIr24O8',
+          youtube_id: 'SId6rIr24O8',
           ingredients: [
             { name: 'Bayam', quantity: 200, unit: 'gr' },
             { name: 'Bawang Merah', quantity: 10, unit: 'gr' },
@@ -538,8 +538,8 @@ export const useAppStore = defineStore('app', {
           carbs: 10,
           protein: 5,
           fat: 6,
-          youtube_video_url: 'https://www.youtube.com/watch?v=X3FzA3wC29g',
-          youtube_id: 'X3FzA3wC29g',
+          youtube_video_url: 'https://www.youtube.com/watch?v=tjHi6ZVWapI',
+          youtube_id: 'tjHi6ZVWapI',
           ingredients: [
             { name: 'Bayam', quantity: 250, unit: 'gr' },
             { name: 'Bawang Merah', quantity: 10, unit: 'gr' },
