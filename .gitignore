@@ -1,0 +1,9 @@
+# Logs
+*.log
+frontend/tunnel_out.txt
+
+# Database dumps
+Olahin_db.sql
+
+# Temp files
+node_ver.txt
