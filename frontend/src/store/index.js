@@ -47,7 +47,7 @@ export const useAppStore = defineStore('app', {
     cookingSuccessData: null,
 
     // Categories
-    categories: ['Semua', 'Protein', 'Sayuran', 'Bumbu', 'Lainnya']
+    categories: ['Semua', 'Daging & Telur', 'Sayuran', 'Bumbu', 'Minyak & Lemak', 'Protein Nabati', 'Buah', 'Lainnya']
   }),
 
   getters: {
@@ -403,7 +403,7 @@ export const useAppStore = defineStore('app', {
         { id: 1, name: 'Telur', quantity: 6, unit: 'pcs', expiry_date: new Date(today.getTime() + 5 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], category: 'Daging & Telur' },
         { id: 2, name: 'Bawang Merah', quantity: 150, unit: 'gr', expiry_date: new Date(today.getTime() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], category: 'Bumbu' },
         { id: 3, name: 'Bawang Putih', quantity: 80, unit: 'gr', expiry_date: new Date(today.getTime() + 20 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], category: 'Bumbu' },
-        { id: 4, name: 'Cabai Merah', quantity: 50, unit: 'gr', expiry_date: new Date(today.getTime() + 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], category: 'Sayuran' },
+        { id: 4, name: 'Cabai Merah', quantity: 50, unit: 'gr', expiry_date: new Date(today.getTime() + 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], category: 'Bumbu' },
         { id: 5, name: 'Bayam', quantity: 300, unit: 'gr', expiry_date: new Date(today.getTime() + 1 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], category: 'Sayuran' },
         { id: 6, name: 'Minyak Goreng', quantity: 1000, unit: 'ml', expiry_date: new Date(today.getTime() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], category: 'Minyak & Lemak' },
         { id: 7, name: 'Kecap Manis', quantity: 250, unit: 'ml', expiry_date: new Date(today.getTime() + 60 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], category: 'Bumbu' },

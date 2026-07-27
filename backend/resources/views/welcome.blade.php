@@ -1748,9 +1748,10 @@
                 }
 
                 // Get category icon
-                let catIcon = 'fa-carrot';
+                let catIcon = 'fa-box';
                 const lowerCat = item.category.toLowerCase();
-                if (lowerCat.includes('daging') || lowerCat.includes('telur')) catIcon = 'fa-egg';
+                if (lowerCat.includes('sayur')) catIcon = 'fa-carrot';
+                else if (lowerCat.includes('daging') || lowerCat.includes('telur')) catIcon = 'fa-egg';
                 else if (lowerCat.includes('bumbu')) catIcon = 'fa-mortar-pestle';
                 else if (lowerCat.includes('minyak') || lowerCat.includes('lemak')) catIcon = 'fa-bottle-droplet';
                 else if (lowerCat.includes('nabati') || lowerCat.includes('tahu') || lowerCat.includes('tempe')) catIcon = 'fa-plate-wheat';

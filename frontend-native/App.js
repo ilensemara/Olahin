@@ -47,7 +47,7 @@ const INITIAL_FRIDGE = [
   { id: 1, name: 'Telur', quantity: 6, unit: 'pcs', expiry_date: '2026-06-30', category: 'Daging & Telur' },
   { id: 2, name: 'Bawang Merah', quantity: 150, unit: 'gr', expiry_date: '2026-07-09', category: 'Bumbu' },
   { id: 3, name: 'Bawang Putih', quantity: 80, unit: 'gr', expiry_date: '2026-07-15', category: 'Bumbu' },
-  { id: 4, name: 'Cabai Merah', quantity: 50, unit: 'gr', expiry_date: '2026-06-27', category: 'Sayuran' }, // Nearing expiry
+  { id: 4, name: 'Cabai Merah', quantity: 50, unit: 'gr', expiry_date: '2026-06-27', category: 'Bumbu' }, // Nearing expiry
   { id: 5, name: 'Bayam', quantity: 300, unit: 'gr', expiry_date: '2026-06-26', category: 'Sayuran' }, // Nearing expiry
   { id: 6, name: 'Minyak Goreng', quantity: 1000, unit: 'ml', expiry_date: '2026-09-25', category: 'Minyak & Lemak' },
   { id: 7, name: 'Kecap Manis', quantity: 250, unit: 'ml', expiry_date: '2026-08-25', category: 'Bumbu' },
@@ -759,7 +759,7 @@ export default function App() {
   const runOfflineCameraSimulation = async () => {
     const detected = [
       { name: 'Telur', category: 'Daging & Telur', unit: 'pcs', quantity: 4, expiry_days: 10 },
-      { name: 'Cabai Merah', category: 'Sayuran', unit: 'gr', quantity: 100, expiry_days: 3 }
+      { name: 'Cabai Merah', category: 'Bumbu', unit: 'gr', quantity: 100, expiry_days: 3 }
     ];
     await addDetectedItemsToFridge(detected);
     Alert.alert(

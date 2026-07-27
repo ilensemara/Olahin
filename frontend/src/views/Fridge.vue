@@ -146,6 +146,49 @@ const strokeDashoffset = computed(() => {
   return circumference - (calPercentage.value / 100) * circumference
 })
 
+const getIngredientIcon = (name, category) => {
+  const nameLower = name.toLowerCase().trim()
+  if (nameLower.includes('telur')) return '🥚'
+  if (nameLower.includes('daging sapi') || nameLower.includes('sapi')) return '🥩'
+  if (nameLower.includes('daging ayam') || nameLower.includes('chicken') || nameLower.includes('ayam')) return '🍗'
+  if (nameLower.includes('ikan')) return '🐟'
+  if (nameLower.includes('udang')) return '🍤'
+  if (nameLower.includes('cabai') || nameLower.includes('cabe')) return '🌶️'
+  if (nameLower.includes('bawang merah') || nameLower.includes('shallot')) return '🧅'
+  if (nameLower.includes('bawang putih') || nameLower.includes('garlic')) return '🧄'
+  if (nameLower.includes('bawang bombay') || nameLower.includes('onion')) return '🧅'
+  if (nameLower.includes('jahe')) return '🫚'
+  if (nameLower.includes('kunyit')) return '🫚'
+  if (nameLower.includes('lengkuas')) return '🫚'
+  if (nameLower.includes('bayam')) return '🥬'
+  if (nameLower.includes('kentang')) return '🥔'
+  if (nameLower.includes('wortel')) return '🥕'
+  if (nameLower.includes('tomat')) return '🍅'
+  if (nameLower.includes('timun') || nameLower.includes('mentimun')) return '🥒'
+  if (nameLower.includes('jagung')) return '🌽'
+  if (nameLower.includes('brokoli')) return '🥦'
+  if (nameLower.includes('sawi') || nameLower.includes('kangkung') || nameLower.includes('kubis') || nameLower.includes('kol')) return '🥬'
+  if (nameLower.includes('minyak')) return '🫗'
+  if (nameLower.includes('mentega') || nameLower.includes('butter') || nameLower.includes('margarin')) return '🧈'
+  if (nameLower.includes('keju')) return '🧀'
+  if (nameLower.includes('tempe') || nameLower.includes('tahu')) return '🥜'
+  if (nameLower.includes('kecap')) return '🍶'
+  if (nameLower.includes('saus') || nameLower.includes('saos')) return '🥫'
+  if (nameLower.includes('garam') || nameLower.includes('merica') || nameLower.includes('lada') || nameLower.includes('gula')) return '🧂'
+  if (nameLower.includes('susu')) return '🥛'
+
+  // Fallback by category
+  const cat = category || ''
+  if (cat === 'Sayuran') return '🥬'
+  if (cat.includes('Daging') || cat === 'Telur') return '🥩'
+  if (cat === 'Bumbu') return '🧅'
+  if (cat.includes('Minyak') || cat.includes('Lemak')) return '🫒'
+  if (cat.includes('Nabati') || cat.includes('Tahu') || cat.includes('Tempe')) return '🥜'
+  if (cat === 'Buah') return '🍎'
+
+  return '📦'
+}
+
 onMounted(() => {
   store.loadFridge()
 })
@@ -213,11 +256,8 @@ onMounted(() => {
             class="bg-white border border-gray-150 rounded-[25px] p-3.5 shadow-sm flex items-center justify-between"
           >
             <div class="flex items-center gap-3">
-              <!-- Visual Food Icon / Emoji depending on category -->
               <span class="w-10 h-10 bg-[#EBF0E9] rounded-2xl flex justify-center items-center text-lg shadow-inner">
-                {{ item.category === 'Sayuran' ? '🥬' : 
-                   item.category === 'Daging & Telur' || item.category === 'Protein' ? '🥩' : 
-                   item.category === 'Bumbu' ? '🧅' : '🍎' }}
+                {{ getIngredientIcon(item.name, item.category) }}
               </span>
               <div>
                 <h4 class="font-extrabold text-nature-forest text-xs">{{ item.name }}</h4>

@@ -43,7 +43,7 @@ if (!defined('INGREDIENTS_DB')) {
         "telur"        => ["name" => "Telur",        "category" => "Daging & Telur", "unit" => "pcs", "default_qty" => 4,  "expiry_days" => 14],
         "bawang merah" => ["name" => "Bawang Merah",  "category" => "Bumbu",         "unit" => "gr",  "default_qty" => 100, "expiry_days" => 14],
         "bawang putih" => ["name" => "Bawang Putih",  "category" => "Bumbu",         "unit" => "gr",  "default_qty" => 50,  "expiry_days" => 20],
-        "cabai"        => ["name" => "Cabai Merah",   "category" => "Sayuran",       "unit" => "gr",  "default_qty" => 80,  "expiry_days" => 5],
+        "cabai"        => ["name" => "Cabai Merah",   "category" => "Bumbu",         "unit" => "gr",  "default_qty" => 80,  "expiry_days" => 5],
         "bayam"        => ["name" => "Bayam",         "category" => "Sayuran",       "unit" => "gr",  "default_qty" => 250, "expiry_days" => 2],
         "ayam"         => ["name" => "Daging Ayam",   "category" => "Daging & Telur","unit" => "gr",  "default_qty" => 500, "expiry_days" => 3],
         "minyak"       => ["name" => "Minyak Goreng", "category" => "Minyak & Lemak","unit" => "ml",  "default_qty" => 1000,"expiry_days" => 180],
@@ -346,7 +346,7 @@ Route::post('/ai/detect-ingredients', function (\Illuminate\Http\Request $reques
     $pool = [
         ['name' => 'Telur', 'category' => 'Daging & Telur', 'unit' => 'pcs', 'quantity' => 4, 'expiry_days' => 10],
         ['name' => 'Bawang Merah', 'category' => 'Bumbu', 'unit' => 'gr', 'quantity' => 120, 'expiry_days' => 14],
-        ['name' => 'Cabai Merah', 'category' => 'Sayuran', 'unit' => 'gr', 'quantity' => 60, 'expiry_days' => 3],
+        ['name' => 'Cabai Merah', 'category' => 'Bumbu', 'unit' => 'gr', 'quantity' => 60, 'expiry_days' => 3],
         ['name' => 'Bayam', 'category' => 'Sayuran', 'unit' => 'gr', 'quantity' => 200, 'expiry_days' => 1],
     ];
     $numItems = rand(2, 4);

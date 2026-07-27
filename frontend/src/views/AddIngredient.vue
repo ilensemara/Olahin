@@ -23,14 +23,14 @@ const expiryDaysInput = ref(7)
 // Preset ingredients list
 const presets = [
   { name: 'Telur', category: 'Daging & Telur', unit: 'pcs', expiry: 14, icon: '🥚' },
-  { name: 'Daging Sapi', category: 'Protein', unit: 'gr', expiry: 3, icon: '🥩' },
+  { name: 'Daging Sapi', category: 'Daging & Telur', unit: 'gr', expiry: 3, icon: '🥩' },
   { name: 'Bayam', category: 'Sayuran', unit: 'gr', expiry: 2, icon: '🥬' },
   { name: 'Wortel', category: 'Sayuran', unit: 'gr', expiry: 7, icon: '🥕' },
-  { name: 'Cabai Merah', category: 'Sayuran', unit: 'gr', expiry: 5, icon: '🌶️' },
+  { name: 'Cabai Merah', category: 'Bumbu', unit: 'gr', expiry: 5, icon: '🌶️' },
   { name: 'Bawang Merah', category: 'Bumbu', unit: 'gr', expiry: 14, icon: '🧅' },
   { name: 'Bawang Putih', category: 'Bumbu', unit: 'siung', expiry: 20, icon: '🧄' },
   { name: 'Minyak', category: 'Minyak & Lemak', unit: 'ml', expiry: 180, icon: '🧴' },
-  { name: 'Udang', category: 'Protein', unit: 'gr', expiry: 2, icon: '🍤' },
+  { name: 'Udang', category: 'Daging & Telur', unit: 'gr', expiry: 2, icon: '🍤' },
 ]
 
 // Filtered presets based on search query
@@ -329,10 +329,13 @@ const finishCameraScan = () => {
         <div>
           <label class="block text-[8px] font-black uppercase text-nature-zaitun tracking-wider mb-0.5">Kategori</label>
           <select v-model="categoryInput" class="w-full px-2 py-2 rounded-xl bg-nature-input text-xs font-bold focus:outline-none focus:bg-white text-nature-forest">
-            <option value="Protein">Protein</option>
-            <option value="Sayuran">Sayuran</option>
-            <option value="Bumbu">Bumbu</option>
-            <option value="Lainnya">Lainnya</option>
+<option value="Daging & Telur">Daging & Telur</option>
+             <option value="Sayuran">Sayuran</option>
+             <option value="Bumbu">Bumbu</option>
+             <option value="Minyak & Lemak">Minyak & Lemak</option>
+             <option value="Protein Nabati">Protein Nabati</option>
+             <option value="Buah">Buah</option>
+             <option value="Lainnya">Lainnya</option>
           </select>
         </div>
         <div>

@@ -40,7 +40,7 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Telur', 'quantity' => 6, 'unit' => 'pcs', 'expiry_date' => $now->copy()->addDays(5)->toDateString(), 'category' => 'Daging & Telur'],
             ['name' => 'Bawang Merah', 'quantity' => 150, 'unit' => 'gr', 'expiry_date' => $now->copy()->addDays(14)->toDateString(), 'category' => 'Bumbu'],
             ['name' => 'Bawang Putih', 'quantity' => 80, 'unit' => 'gr', 'expiry_date' => $now->copy()->addDays(20)->toDateString(), 'category' => 'Bumbu'],
-            ['name' => 'Cabai Merah', 'quantity' => 50, 'unit' => 'gr', 'expiry_date' => $now->copy()->addDays(2)->toDateString(), 'category' => 'Sayuran'], // Nearing expiry
+            ['name' => 'Cabai Merah', 'quantity' => 50, 'unit' => 'gr', 'expiry_date' => $now->copy()->addDays(2)->toDateString(), 'category' => 'Bumbu'], // Nearing expiry
             ['name' => 'Bayam', 'quantity' => 300, 'unit' => 'gr', 'expiry_date' => $now->copy()->addDays(1)->toDateString(), 'category' => 'Sayuran'], // Nearing expiry
             ['name' => 'Minyak Goreng', 'quantity' => 1000, 'unit' => 'ml', 'expiry_date' => $now->copy()->addDays(90)->toDateString(), 'category' => 'Minyak & Lemak'],
             ['name' => 'Kecap Manis', 'quantity' => 250, 'unit' => 'ml', 'expiry_date' => $now->copy()->addDays(60)->toDateString(), 'category' => 'Bumbu'],
