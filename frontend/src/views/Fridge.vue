@@ -47,6 +47,22 @@ const deleteItem = async (id) => {
   await store.deleteIngredient(id)
 }
 
+const quickAdjust = async (item, delta) => {
+  const step = item.unit === 'gr' ? 50 : item.unit === 'ml' ? 100 : 1
+  const newQty = Math.max(0, Number((item.quantity + delta * step).toFixed(1)))
+  if (newQty <= 0) {
+    if (confirm(`Hapus ${item.name} dari kulkas karena habis?`)) {
+      await store.deleteIngredient(item.id)
+    }
+    return
+  }
+  await store.updateIngredientQuantity(item.id, newQty)
+}
+
+const cookWithIngredient = (ingredientName) => {
+  router.push({ path: '/recipes', query: { q: ingredientName } })
+}
+
 // ----------------------------------------------------
 // Nutrition Tab calculations (Matches screen 8 mockup)
 // ----------------------------------------------------
@@ -195,7 +211,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="flex-1 bg-nature-cream flex flex-col p-5 overflow-y-auto relative">
+  <div class="flex-1 flex flex-col relative">
     <!-- Header title -->
     <div class="flex justify-between items-center mb-4 pt-2">
       <div class="flex items-center gap-1">
@@ -261,21 +277,49 @@ onMounted(() => {
               </span>
               <div>
                 <h4 class="font-extrabold text-nature-forest text-xs">{{ item.name }}</h4>
-                <p class="text-[9px] text-gray-400 font-bold uppercase tracking-wider mt-0.5">{{ item.quantity }} {{ item.unit }}</p>
+                <div class="flex items-center gap-1.5 mt-0.5">
+                  <span class="text-[9px] text-gray-500 font-bold uppercase tracking-wider">{{ item.quantity }} {{ item.unit }}</span>
+                  <div class="flex items-center gap-0.5 bg-gray-100 rounded-lg p-0.5">
+                    <button 
+                      @click.stop="quickAdjust(item, -1)" 
+                      class="w-4 h-4 bg-white rounded flex items-center justify-center text-[10px] font-black text-gray-600 hover:text-rose-500 active:scale-90 shadow-xs"
+                      title="Kurangi"
+                    >
+                      -
+                    </button>
+                    <button 
+                      @click.stop="quickAdjust(item, 1)" 
+                      class="w-4 h-4 bg-white rounded flex items-center justify-center text-[10px] font-black text-gray-600 hover:text-emerald-700 active:scale-90 shadow-xs"
+                      title="Tambah"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <!-- Expiry badging & Remove trigger -->
-            <div class="flex items-center gap-2">
+            <!-- Expiry badging, Cook trigger & Remove trigger -->
+            <div class="flex items-center gap-1.5">
+              <button 
+                @click="cookWithIngredient(item.name)"
+                class="py-1 px-2 bg-nature-mint hover:bg-emerald-100 text-nature-zaitun font-black text-[9px] rounded-lg uppercase tracking-wider active:scale-95 transition-all shadow-xs flex items-center gap-0.5"
+                title="Cari Resep Menggunakan Bahan Ini"
+              >
+                <span>🍳</span>
+                <span>Masak</span>
+              </button>
+
               <span 
-                class="border px-2.5 py-0.5 rounded-lg text-[8px] font-black uppercase tracking-wider"
+                class="border px-2 py-0.5 rounded-lg text-[8px] font-black uppercase tracking-wider"
                 :class="getExpiryClass(item.expiry_date)"
               >
                 {{ getExpiryLabel(item.expiry_date) }}
               </span>
               <button 
                 @click="deleteItem(item.id)" 
-                class="p-2 text-gray-300 hover:text-rose-500 rounded-lg transition-colors"
+                class="p-1.5 text-gray-300 hover:text-rose-500 rounded-lg transition-colors"
+                title="Hapus"
               >
                 ✕
               </button>
@@ -283,12 +327,36 @@ onMounted(() => {
           </div>
         </div>
 
-        <div v-else class="flex-1 flex flex-col items-center justify-center py-12 bg-white rounded-[25px] border border-gray-150 p-6 text-center shadow-sm">
-          <span class="text-3xl mb-2">📦</span>
-          <p class="text-xs font-bold text-nature-forest mb-0.5">Kategori {{ activeCategory }} Kosong</p>
-          <p class="text-[9px] text-gray-400 leading-normal max-w-[150px]">
-            Tambahkan bahan untuk melihatnya di sini.
+        <!-- Empty State (When Category is Empty or Kulkas completely empty) -->
+        <div v-else class="flex-1 flex flex-col items-center justify-center py-12 bg-white rounded-[30px] border border-gray-150 p-6 text-center shadow-sm">
+          <div class="w-16 h-16 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center text-3xl mb-3 shadow-inner">
+            🧊
+          </div>
+          <h4 class="text-sm font-extrabold text-nature-forest mb-1">
+            {{ store.fridgeItems.length === 0 ? 'Kulkas Anda Masih Kosong' : `Kategori "${activeCategory}" Kosong` }}
+          </h4>
+          <p class="text-xs text-gray-400 leading-relaxed max-w-[240px] mb-4">
+            {{ store.fridgeItems.length === 0 ? 'Belum ada bahan makanan tercatat. Yuk foto bahan kulkasmu atau gunakan data simulasi demo!' : 'Tidak ada bahan makanan di kategori ini.' }}
           </p>
+
+          <div class="flex flex-col gap-2 w-full max-w-[220px]">
+            <button 
+              @click="router.push('/add-ingredient')"
+              class="w-full py-2.5 bg-[#4D5C48] hover:bg-emerald-800 text-white font-extrabold rounded-2xl text-xs uppercase tracking-wider active:scale-95 shadow-md flex items-center justify-center gap-1.5"
+            >
+              <span>📸</span>
+              <span>Foto Bahan Kulkas</span>
+            </button>
+            
+            <button 
+              v-if="store.fridgeItems.length === 0"
+              @click="store.loadOfflineData(true)"
+              class="w-full py-2 bg-nature-mint text-nature-zaitun font-black rounded-2xl text-[10px] uppercase tracking-wider active:scale-95 shadow-xs flex items-center justify-center gap-1.5"
+            >
+              <span>🎁</span>
+              <span>Isi Contoh Kulkas (Demo)</span>
+            </button>
+          </div>
         </div>
       </div>
 

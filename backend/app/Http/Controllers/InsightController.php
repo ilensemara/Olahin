@@ -105,6 +105,50 @@ class InsightController extends Controller
             }
         }
 
+        // 5. Get detailed cooking logs for Today and Recent 7 Days
+        $dayIndo = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+        $todayStart = Carbon::today()->startOfDay();
+
+        $todayMeals = CookingLog::with('recipe')
+            ->where('cooked_at', '>=', $todayStart)
+            ->orderBy('cooked_at', 'desc')
+            ->get()
+            ->map(function ($log) {
+                return [
+                    'id' => $log->id,
+                    'title' => $log->recipe_title,
+                    'calories' => $log->recipe ? $log->recipe->calories : 350,
+                    'carbs' => $log->recipe ? $log->recipe->carbs : 40,
+                    'protein' => $log->recipe ? $log->recipe->protein : 15,
+                    'fat' => $log->recipe ? $log->recipe->fat : 10,
+                    'time' => $log->cooked_at ? $log->cooked_at->format('H:i') : Carbon::now()->format('H:i'),
+                    'waste_prevented_kg' => (float) $log->waste_prevented_kg,
+                    'cost_saved_rp' => (int) $log->cost_saved_rp,
+                ];
+            });
+
+        $recentMeals = CookingLog::with('recipe')
+            ->where('cooked_at', '>=', $startOfWeek)
+            ->orderBy('cooked_at', 'desc')
+            ->take(15)
+            ->get()
+            ->map(function ($log) use ($dayIndo) {
+                $dt = $log->cooked_at ?? Carbon::now();
+                return [
+                    'id' => $log->id,
+                    'title' => $log->recipe_title,
+                    'calories' => $log->recipe ? $log->recipe->calories : 350,
+                    'carbs' => $log->recipe ? $log->recipe->carbs : 40,
+                    'protein' => $log->recipe ? $log->recipe->protein : 15,
+                    'fat' => $log->recipe ? $log->recipe->fat : 10,
+                    'date' => $dt->toDateString(),
+                    'day' => $dayIndo[$dt->dayOfWeek],
+                    'time' => $dt->format('H:i'),
+                    'waste_prevented_kg' => (float) $log->waste_prevented_kg,
+                    'cost_saved_rp' => (int) $log->cost_saved_rp,
+                ];
+            });
+
         return response()->json([
             'success' => true,
             'user' => $user,
@@ -114,6 +158,8 @@ class InsightController extends Controller
                 'protein' => $todayProtein,
                 'fat' => $todayFat
             ],
+            'today_meals' => $todayMeals,
+            'recent_meals' => $recentMeals,
             'summary' => [
                 'total_waste_saved_kg' => round($totalWasteSaved, 2),
                 'total_cost_saved_rp' => (int) $totalCostSaved,

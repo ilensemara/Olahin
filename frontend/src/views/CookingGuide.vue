@@ -2,23 +2,41 @@
 import { ref, computed, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAppStore } from '../store'
+import { getRecipeImage, getRecipeYoutubeId, getRecipeYoutubeAppUrl } from '../utils/recipeMedia'
 
 const router = useRouter()
 const store = useAppStore()
 
-// Safety check: redirect to recipes if no recipe selected
-if (!store.selectedRecipe) {
-  router.push('/recipes')
+const fallbackCookRecipe = {
+  id: 1,
+  title: 'Nasi Goreng Telur',
+  steps: [
+    "Panaskan 15ml minyak goreng di wajan dengan api sedang.",
+    "Tumis irisan bawang merah dan bawang putih hingga harum dan layu.",
+    "Masukkan telur, buat orak-arik hingga setengah matang.",
+    "Masukkan nasi putih, aduk rata dengan bumbu dan telur.",
+    "Tambahkan kecap manis dan garam secukupnya, aduk hingga matang merata."
+  ],
+  youtube_id: 'i6yHVLgrELQ',
+  ingredients: [
+    { name: 'Telur', quantity: 1, unit: 'pcs' },
+    { name: 'Bawang Merah', quantity: 15, unit: 'gr' },
+    { name: 'Bawang Putih', quantity: 10, unit: 'gr' }
+  ]
 }
 
-const recipe = store.selectedRecipe || {
-  title: 'Resep',
-  steps: [],
-  youtube_id: '78PjgDRsAnE'
-}
+const recipe = computed(() => {
+  const sel = store.selectedRecipe || fallbackCookRecipe
+  return {
+    ...sel,
+    image: sel.image || getRecipeImage(sel),
+    youtube_id: getRecipeYoutubeId(sel),
+    youtube_video_url: getRecipeYoutubeAppUrl(sel)
+  }
+})
 
 const currentStep = ref(0)
-const totalSteps = computed(() => recipe.steps.length)
+const totalSteps = computed(() => recipe.value.steps?.length || 0)
 
 // Countdown Timer State
 const defaultTime = 120 // 2 minutes in seconds
@@ -97,8 +115,9 @@ const closeVideoModal = () => {
 }
 
 const youtubeEmbedUrl = computed(() => {
-  const videoId = recipe.youtube_id || '78PjgDRsAnE'
-  return `https://www.youtube.com/embed/${videoId}?autoplay=1`
+  const videoId = recipe.value?.youtube_id || getRecipeYoutubeId(recipe.value)
+  const origin = typeof window !== 'undefined' && window.location?.origin ? encodeURIComponent(window.location.origin) : ''
+  return `https://www.youtube.com/embed/${videoId}?autoplay=1&playsinline=1&rel=0&enablejsapi=1${origin ? `&origin=${origin}` : ''}`
 })
 
 onUnmounted(() => {
@@ -107,10 +126,10 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="flex-1 bg-nature-cream flex flex-col justify-between p-5">
+  <div class="flex-1 flex flex-col justify-between">
     <!-- Header -->
     <div class="flex items-center gap-1 pt-2">
-      <button @click="router.push('/recipes')" class="p-1 -ml-1 text-nature-forest hover:opacity-80">
+      <button @click="router.push('/recipe-detail')" class="p-1 -ml-1 text-nature-forest hover:opacity-80">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
         </svg>
@@ -209,15 +228,34 @@ onUnmounted(() => {
             title="YouTube video player" 
             frameborder="0" 
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+            referrerpolicy="strict-origin-when-cross-origin"
             allowfullscreen
           ></iframe>
         </div>
         
         <!-- Modal Footer -->
-        <div class="p-4 bg-gray-50 text-center">
-          <p class="text-xs font-bold text-nature-slate leading-relaxed">
-            Menonton: {{ recipe.title }}
-          </p>
+        <div class="p-4 bg-gray-50 flex flex-col gap-2.5">
+          <div class="text-center">
+            <p class="text-xs font-bold text-nature-slate leading-relaxed truncate">
+              Menonton: {{ recipe.title }}
+            </p>
+            <p class="text-[10px] text-gray-400">
+              Putar langsung di sini atau alihkan ke aplikasi YouTube.
+            </p>
+          </div>
+
+          <a 
+            :href="recipe.youtube_video_url || getRecipeYoutubeAppUrl(recipe)" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            class="w-full py-2.5 px-4 bg-rose-600 hover:bg-rose-700 active:scale-95 text-white rounded-xl text-xs font-black flex items-center justify-center gap-2 shadow-sm transition"
+          >
+            <span>▶</span>
+            <span>Buka di Aplikasi YouTube</span>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+          </a>
         </div>
       </div>
     </div>

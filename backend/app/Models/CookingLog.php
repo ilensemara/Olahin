@@ -22,4 +22,9 @@ class CookingLog extends Model
         'waste_prevented_kg' => 'float',
         'cost_saved_rp' => 'integer'
     ];
+
+    public function recipe()
+    {
+        return $this->belongsTo(Recipe::class, 'recipe_id');
+    }
 }

@@ -10,9 +10,11 @@ import Fridge from '../views/Fridge.vue'
 import AddIngredient from '../views/AddIngredient.vue'
 import Nutrition from '../views/Nutrition.vue'
 import RecipeRecommendations from '../views/RecipeRecommendations.vue'
+import RecipeDetail from '../views/RecipeDetail.vue'
 import CookingGuide from '../views/CookingGuide.vue'
 import CookingSuccess from '../views/CookingSuccess.vue'
 import Insights from '../views/Insights.vue'
+import MealPlanner from '../views/MealPlanner.vue'
 
 const routes = [
   { path: '/', name: 'Splash', component: Splash },
@@ -23,7 +25,9 @@ const routes = [
   { path: '/fridge', name: 'Fridge', component: Fridge, meta: { requiresAuth: true } },
   { path: '/add-ingredient', name: 'AddIngredient', component: AddIngredient, meta: { requiresAuth: true } },
   { path: '/nutrition', name: 'Nutrition', component: Nutrition, meta: { requiresAuth: true } },
+  { path: '/meal-planner', name: 'MealPlanner', component: MealPlanner, meta: { requiresAuth: true } },
   { path: '/recipes', name: 'RecipeRecommendations', component: RecipeRecommendations, meta: { requiresAuth: true } },
+  { path: '/recipe-detail', name: 'RecipeDetail', component: RecipeDetail, meta: { requiresAuth: true } },
   { path: '/cook', name: 'CookingGuide', component: CookingGuide, meta: { requiresAuth: true } },
   { path: '/cooking-success', name: 'CookingSuccess', component: CookingSuccess, meta: { requiresAuth: true } },
   { path: '/insights', name: 'Insights', component: Insights, meta: { requiresAuth: true } },
